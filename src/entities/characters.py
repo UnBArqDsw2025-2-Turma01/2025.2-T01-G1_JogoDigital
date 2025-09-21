@@ -20,6 +20,10 @@ class Inimigos:
     def hp(self, value):
         self._hp = value
 
+    def receber_dano(self, dano: int):
+        self.hp -= dano
+        self.hp()
+
     def mover(self):
         pass
 
