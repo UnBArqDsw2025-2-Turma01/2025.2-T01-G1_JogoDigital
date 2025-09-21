@@ -11,6 +11,9 @@ class Inimigos:
 
     def atacar(self):
         pass
+    
+    def parar(self):
+        pass
 
     @property
     def hp(self):
@@ -42,6 +45,9 @@ class Heroi:
     def receber_dano(self, dano: int):
         self.hp -= dano
         self.hp()
+
+    def procura(self):
+        pass
 
     @property
     def hp(self):

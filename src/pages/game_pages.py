@@ -123,3 +123,6 @@ class PaginaPartida:
 
     def atualizar_map_lib(self):
         pass
+
+    def posicionar_heroi(self):
+        pass
