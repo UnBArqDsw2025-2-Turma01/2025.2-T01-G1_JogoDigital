@@ -1,5 +1,3 @@
-# Core/GameMain.py
-
 import pygame
 from Core.ScreenManager import ScreenManager
 from Core.EventManager import EventManager
@@ -8,6 +6,8 @@ from Model.Entities import caiporas_grupo, inimigos_grupo, projeteis_grupo
 from Template.PhysicsEngine import PhysicsEngine
 from View.ViewRenderer import ViewRenderer
 from Template.UIConfigs import FPS
+from View.MenuScreen import MenuScreen
+from View.GameScreen import GameScreen
 
 class GameMain:
     def __init__(self):
@@ -26,6 +26,14 @@ class GameMain:
             'GAME_PAUSED': False
         }
 
+        telas = {
+            "menu": MenuScreen(),
+            "jogo": GameScreen()
+        }
+
+        ScreenManager.registrar_telas(telas)
+        ScreenManager.set_tela("menu")
+
     def update(self):
         """Lógica de atualização do jogo."""
         
@@ -41,22 +49,9 @@ class GameMain:
         relogio = ScreenManager.get_relogio()
         
         while rodando:
-            
-            # --- INPUT/EVENTOS ---
-            rodando, self.state_vars = EventManager.processar_eventos(self.state_vars)
-            if not rodando:
-                break
-            
-            # --- ATUALIZAÇÃO ---
-            if not self.state_vars['GAME_PAUSED']:
-                self.update()
-            
-            # --- RENDERIZAÇÃO ---
-            ViewRenderer.renderizar(
-                self.state_vars['MODO_COLOCACAO_ATIVO'], 
-                self.state_vars['GAME_PAUSED']
-            )
-            
+            rodando = ScreenManager.handle_events()  # já captura e repassa eventos
+            ScreenManager.update()
+            ScreenManager.draw()
             relogio.tick(FPS)
             
         pygame.quit()

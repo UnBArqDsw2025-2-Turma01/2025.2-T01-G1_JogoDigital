@@ -1,19 +1,18 @@
-# Core/EventManager.py
-
 import pygame
-from View.InputHandler import InputHandler
+from Core.ScreenManager import ScreenManager
 
+
+# classe obsoleta, mas mantida por compatibilidade
 class EventManager:
-    @classmethod
-    def processar_eventos(cls, state_vars):
-        """Processa todos os eventos do Pygame."""
-        rodando = True
-        
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                rodando = False
-            
-            # Passa o evento para o InputHandler processar
-            state_vars = InputHandler.handle_event(evento, state_vars)
-                
-        return rodando, state_vars
+    @staticmethod
+    def processar_eventos():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False  # pra sair do jogo
+            else:
+                # o event manager apenas encaminha os eventos
+                # e as respectivas telas lidam com eles
+                tela = ScreenManager.get_tela_atual()
+                if tela:
+                    tela.handle_event(event)
+        return True
