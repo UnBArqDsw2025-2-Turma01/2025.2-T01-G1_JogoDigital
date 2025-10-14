@@ -1,10 +1,13 @@
-# View/InputHandler.py
 
-# REMOVA ESTA LINHA: from Core.EventManager import EventManager 
 from Template.UIConfigs import *
 from Model.Level import Level
 from View.ViewRenderer import ViewRenderer
-import pygame # Necessário para MOUSEBUTTONDOWN
+import pygame 
+
+# ALERTA
+# classe obsoleta - mantida apenas para referência futura
+
+
 
 class InputHandler:
     # Mudamos o método para aceitar o 'evento' de Pygame
@@ -14,9 +17,6 @@ class InputHandler:
         
         if evento.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = evento.pos
-            
-            # O resto da sua lógica de handle_mouse_click vem para cá.
-            # (Mantendo o conteúdo anterior para brevidade, mas garantindo que use evento.pos)
             
             MODO_COLOCACAO_ATIVO = state_vars['MODO_COLOCACAO_ATIVO']
             GAME_PAUSED = state_vars['GAME_PAUSED']

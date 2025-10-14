@@ -2,7 +2,11 @@ import pygame
 from Core.ScreenManager import ScreenManager
 
 
-# classe obsoleta, mas mantida por compatibilidade
+# ALERTA
+# classe obsoleta - mantida apenas para referência futura
+
+
+
 class EventManager:
     @staticmethod
     def processar_eventos():

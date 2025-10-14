@@ -6,15 +6,15 @@ from Model.Entities import caiporas_grupo, inimigos_grupo, projeteis_grupo
 from Template.PhysicsEngine import PhysicsEngine
 from View.ViewRenderer import ViewRenderer
 from Template.UIConfigs import FPS
-from View.MenuScreen import MenuScreen
-from View.GameScreen import GameScreen
+from View.MenuScreen.MenuScreen import MenuScreen
+from View.GameScreen.GameScreen import GameScreen
 
 class GameMain:
     def __init__(self):
         # 1. Inicializa Pygame e carrega Assets
         ScreenManager.inicializar_pygame()
         
-        # 2. Inicializa as fontes APÓS o Pygame estar pronto
+        # 2. Inicializa as fontes APÓS o Pyga estar pronto
         ViewRenderer.inicializar_fontes() 
         
         # 3. Inicializa o Mapa e as Entidades Iniciais
