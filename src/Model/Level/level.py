@@ -2,7 +2,8 @@ import random
 from typing import List, Optional
 from enum import Enum
 from Template.UIConfigs import NUM_LINHAS, NUM_COLUNAS
-from Model.Entities import Caipora, BichoPapao
+from Model.Defense.caipora import Caipora
+from Model.Enemies.bichopapao import BichoPapao
 
 class LevelStatus(Enum):
     LOCKED = "locked"

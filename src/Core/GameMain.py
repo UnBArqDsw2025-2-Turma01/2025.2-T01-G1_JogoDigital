@@ -1,7 +1,7 @@
 import pygame
 from Core.ScreenManager import ScreenManager
 from Model.Level import Level
-from Model.Entities import caiporas_grupo, inimigos_grupo, projeteis_grupo
+from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo
 from Template.PhysicsEngine import PhysicsEngine
 from View.ViewRenderer import ViewRenderer
 from Template.UIConfigs import FPS
