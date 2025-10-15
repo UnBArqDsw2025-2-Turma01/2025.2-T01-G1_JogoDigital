@@ -1,4 +1,5 @@
 import pygame
+import os
 from Template.UIConfigs import *
 from Asset.AssetProvider import AssetProvider
 
@@ -17,11 +18,10 @@ class ScreenManager:
         if not pygame.font.get_init():
             pygame.font.init() 
             
-        cls.TELA = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
+        cls.TELA = pygame.display.set_mode((LARGURA_TELA_JANELA, ALTURA_TELA_JANELA))
         pygame.display.set_caption(TITULO_JOGO)
-        
         AssetProvider.carregar_assets()
-        
         cls.RELOGIO = pygame.time.Clock()
 
     @classmethod
