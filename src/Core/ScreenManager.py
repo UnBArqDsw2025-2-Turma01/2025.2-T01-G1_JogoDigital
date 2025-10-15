@@ -14,7 +14,10 @@ class ScreenManager:
     def inicializar_pygame(cls):
         """Inicializa Pygame, relógio e carrega assets."""
         pygame.init()
-        
+        pygame.mixer.init()
+        pygame.mixer.music.load("src/Asset/songs/forest.wav")
+        pygame.mixer.music.play(-1)
+
         if not pygame.font.get_init():
             pygame.font.init() 
             
