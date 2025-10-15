@@ -8,6 +8,7 @@ from Asset.AssetProvider import AssetProvider
 caiporas_grupo = pygame.sprite.Group()
 inimigos_grupo = pygame.sprite.Group()
 projeteis_grupo = pygame.sprite.Group()
+guaranas_grupo = pygame.sprite.Group()
 
 # Funções de Posição
 def get_posicao_tela(col, lin):
@@ -101,3 +102,36 @@ class BichoPapao(pygame.sprite.Sprite):
             
         if self.vida <= 0:
             self.kill()
+
+
+class Guarana(pygame.sprite.Sprite):
+    """Sprite colecionável que cai; fica em Entities para separar Model/View."""
+    def __init__(self, x, y, value=1, speed=2):
+        # adiciona automaticamente ao grupo de guaranás
+        super().__init__(guaranas_grupo)
+        self.value = value
+        self.speed = speed
+
+        img = AssetProvider.get('guarana_coin')
+        if img is None:
+            surf = pygame.Surface((40, 40), pygame.SRCALPHA)
+            pygame.draw.circle(surf, (255, 200, 0), (20, 20), 16)
+            pygame.draw.circle(surf, (200, 150, 0), (20, 20), 16, 2)
+            img = surf
+        else:
+            try:
+                img = pygame.transform.scale(img, (40, 40))
+            except Exception:
+                pass
+
+        self.image = img
+        self.rect = self.image.get_rect(center=(x, y))
+
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.top > ALTURA_TELA:
+            self.kill()
+
+    def collect(self):
+        # placeholder: pode tocar som / animar
+        self.kill()

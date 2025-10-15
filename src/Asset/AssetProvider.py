@@ -42,6 +42,12 @@ class AssetProvider:
                 for img in bp_walk
             ]
 
+            # GUARANÁ (moeda) - carregar com o mesmo padrão dos outros assets
+            cls.ASSETS['guarana_coin'] = pygame.transform.scale(
+                pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'guarana_coin.png')).convert_alpha(),
+                (40, 40)
+            )
+
             print("Assets carregados com sucesso.")
 
         except pygame.error as e:
