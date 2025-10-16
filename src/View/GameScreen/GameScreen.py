@@ -6,7 +6,7 @@ from View.GameScreen.GameScreenRenderer import GameScreenRenderer
 class GameScreen(BaseScreen):
     def __init__(self):
         super().__init__()
-        # Inicializa o mapa e entidades
+
         Level.inicializar_mapa()
 
         # Estado da tela
