@@ -1,6 +1,7 @@
-# Template/UIConfigs.py
-
 import pygame
+
+LARGURA_TELA_JANELA = 1248
+ALTURA_TELA_JANELA = 832
 
 # --- CONFIGURAÇÕES DO PYGAME ---
 FPS = 60
