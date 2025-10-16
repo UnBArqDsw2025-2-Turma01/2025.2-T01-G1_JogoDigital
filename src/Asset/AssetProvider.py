@@ -48,6 +48,44 @@ class AssetProvider:
                 (40, 40)
             )
 
+            # MENU PAUSA
+            cls.ASSETS.update({
+                # Fundo do menu pausa
+                'menu_pausa': pygame.image.load(
+                    os.path.join(base_dir, 'menu_pause', 'menu_pausa.png')
+                ).convert_alpha(),
+
+                # Botão MÚSICA
+                'btn_musica': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_musica.png')).convert_alpha(),
+                    (200, 60)  # Largura, altura
+                ),
+                'btn_musica_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_musica_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+
+                # Botão EFEITO SONORO
+                'btn_efeito': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_efeitoSonoro.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_efeito_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_efeitoSonoro_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+
+                # Botão TUTORIAL
+                'btn_tutorial': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_tutorial.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_tutorial_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_tutorial_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                })
+
             print("Assets carregados com sucesso.")
 
         except pygame.error as e:

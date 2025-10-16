@@ -6,6 +6,7 @@ from View.UIRenderer import UIRenderer
 from Template.UIConfigs import GRID_OFFSET_X, GRID_OFFSET_Y, NUM_LINHAS, NUM_COLUNAS, TAMANHO_QUADRADO
 from Core.ScreenManager import ScreenManager
 from Model.Level import Level
+from View.Modal.PauseModal import PauseModal
 import random
 
 
@@ -36,6 +37,10 @@ class GameScreenRenderer:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
+
+            if self.pause_rect.collidepoint(event.pos):
+                ScreenManager.push_modal(PauseModal())
+                self.state_vars['GAME_PAUSED'] = True
 
             # Botão ADICIONAR
             if self.add_rect.collidepoint(x, y):
