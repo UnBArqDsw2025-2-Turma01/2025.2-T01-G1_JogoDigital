@@ -1,40 +1,64 @@
-from .enemy import Enemy
-from ..sprite_groups import inimigos_grupo, get_posicao_tela
+# models/bicho_papao.py
+from ..Enemies.enemy import Enemy
+import pygame
 from Asset.AssetProvider import AssetProvider
-from Template.UIConfigs import *
+from Model.sprite_groups import inimigos_grupo, get_posicao_tela
 
 class BichoPapao(Enemy):
     def __init__(self, grid_x, grid_y):
+        # Converte coordenadas do grid para posição na tela
         self.grid_x = grid_x
         self.grid_y = grid_y
-        self.pos_x, self.pos_y = get_posicao_tela(self.grid_x, self.grid_y)
+        self.pos_x, self.pos_y = get_posicao_tela(grid_x, grid_y)
         
-        super().__init__(self.pos_x, self.pos_y, TAMANHO_BP, TAMANHO_BP, None)
+        # Inicializa a entidade sem imagem, pois vamos usar uma animação
+        super().__init__(self.pos_x, self.pos_y, 70, 100, image_path=None)
         
-        self.remove(self.groups())
-        inimigos_grupo.add(self)
-        
-        self.frames = AssetProvider.get('bp_walk')
-        self.frame_index = 0
-        self.image = self.frames[self.frame_index]
-        self.animation_timer = 0 
-        self.frame_duration = 10 
-        
-        OFFSET_CENTER = (TAMANHO_QUADRADO - TAMANHO_BP) // 2 
-        self.rect = self.image.get_rect(topleft=(self.pos_x + OFFSET_CENTER, self.pos_y + OFFSET_CENTER))
-        
-        self.vida = 2 
-        self.velocidade = 0.5
+        # Carrega a animação e configura o estado inicial
+        self.walk_animation = AssetProvider.get('bp_walk')
+        self.current_frame = 0
+        self.image = self.walk_animation[self.current_frame]
+        self.rect = self.image.get_rect(topleft=(self.pos_x, self.pos_y))
+        self.animation_speed = 0.1  # Velocidade da animação
 
-    def update(self):
-        self.rect.x -= self.velocidade
-        self.grid_x = max(0, (self.rect.x - GRID_OFFSET_X) // TAMANHO_QUADRADO)
+        # Adiciona a instância ao grupo de inimigos
+        inimigos_grupo.add(self)
+
+        # Atributos de combate e habilidade
+        self.health = 400
+        self.speed = 1.2
+        self.damage = 30
         
-        self.animation_timer += 1
-        if self.animation_timer >= self.frame_duration: 
-            self.frame_index = (self.frame_index + 1) % len(self.frames)
-            self.image = self.frames[self.frame_index]
-            self.animation_timer = 0
+        self.scare_range = 100
+        self.scare_duration = 3000 
+        self.scare_cooldown = 8000 
+        self.last_scare_time = -self.scare_cooldown 
+    
+    def update(self):
+        # Atualiza a animação
+        self.current_frame = (self.current_frame + self.animation_speed) % len(self.walk_animation)
+        self.image = self.walk_animation[int(self.current_frame)]
+
+        # Chama a lógica de update da classe pai (movimento, etc.)
+        super().update()
+
+    def attack(self, defense):
+        """Ataca a defesa, priorizando a habilidade de susto se estiver disponível."""
+        now = pygame.time.get_ticks()
+        
+        # Verifica se pode usar a habilidade de susto
+        if now - self.last_scare_time > self.scare_cooldown:
+            scare_area = self.rect.copy()
+            scare_area.x -= self.scare_range
             
-        if self.vida <= 0:
-            self.kill()
+            if scare_area.colliderect(defense.rect):
+                self.scare(defense)
+                self.last_scare_time = now
+                return
+        
+        # Ataque padrão: aplica dano à defesa
+        defense.health -= self.damage * 0.1
+        
+    def scare(self, defense):
+        if hasattr(defense, 'get_scared'):
+            defense.get_scared(self.scare_duration)
