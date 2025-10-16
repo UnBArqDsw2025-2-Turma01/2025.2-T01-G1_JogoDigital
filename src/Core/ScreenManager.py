@@ -15,7 +15,8 @@ class ScreenManager:
         """Inicializa Pygame, relógio e carrega assets."""
         pygame.init()
         pygame.mixer.init()
-        pygame.mixer.music.load("src/Asset/songs/forest.wav")
+        song_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Asset', 'songs', 'forest.wav'))
+        pygame.mixer.music.load(song_path)
         pygame.mixer.music.play(-1)
 
         if not pygame.font.get_init():
