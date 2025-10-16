@@ -1,7 +1,7 @@
 # Template/PhysicsEngine.py
 
 import pygame
-from Model.sprite_groups import projeteis_grupo, inimigos_grupo
+from Model.sprite_groups import projeteis_grupo, inimigos_grupo, caiporas_grupo
 
 class PhysicsEngine:
     @classmethod
