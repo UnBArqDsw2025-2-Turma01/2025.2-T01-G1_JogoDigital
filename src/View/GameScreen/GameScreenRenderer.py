@@ -1,5 +1,5 @@
 import pygame
-from Model.Entities import caiporas_grupo, inimigos_grupo, projeteis_grupo, guaranas_grupo, Guarana
+from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo, guaranas_grupo, Guarana
 from Template.PhysicsEngine import PhysicsEngine
 from Template.TemplateRenderer import TemplateRenderer
 from View.UIRenderer import UIRenderer
