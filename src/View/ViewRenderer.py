@@ -3,7 +3,7 @@
 import pygame
 from Template.UIConfigs import *
 from Template.TemplateRenderer import TemplateRenderer
-from Model.Entities import caiporas_grupo, inimigos_grupo, projeteis_grupo
+from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo
 from Core.ScreenManager import ScreenManager
 
 class ViewRenderer:
