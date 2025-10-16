@@ -4,6 +4,7 @@ from enum import Enum
 from Template.UIConfigs import NUM_LINHAS, NUM_COLUNAS
 from Model.Defense.caipora import Caipora
 from Model.Enemies.bichopapao import BichoPapao
+from Model.Enemies.bruxa import Bruxa
 
 class LevelStatus(Enum):
     LOCKED = "locked"
@@ -72,8 +73,16 @@ class Level:
             cls.MAPA_LOGICO[linha][0] = 1 
             Caipora(0, linha)
 
+        # Instancia o Bicho-Papão em uma linha aleatória na última coluna
         linha_bp = random.randint(0, NUM_LINHAS - 1)
         BichoPapao(NUM_COLUNAS - 1, linha_bp)
+        
+        # Instancia a Bruxa em uma linha aleatória, 2 colunas mais à direita (fora do mapa inicialmente)
+        # Ela entrará no jogo depois do Bicho-Papão
+        linha_bruxa = random.randint(0, NUM_LINHAS - 1)
+        while linha_bruxa == linha_bp:  # Garante que não seja na mesma linha
+            linha_bruxa = random.randint(0, NUM_LINHAS - 1)
+        Bruxa(NUM_COLUNAS + 1, linha_bruxa)  # +1 significa que ela começa fora da tela
         
     @classmethod
     def is_posicao_vazia(cls, linha, coluna):

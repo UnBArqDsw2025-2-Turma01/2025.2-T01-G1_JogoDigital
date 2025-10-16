@@ -29,11 +29,30 @@ class Caipora(Defense):
         # Atributos para o efeito de susto
         self.is_scared = False
         self.scare_end_time = 0
+        
+        # Atributos para o efeito de envenenamento
+        self.is_poisoned = False
+        self.poison_damage = 0
+        self.poison_end_time = 0
+        self.last_poison_tick = 0
+        self.poison_tick_rate = 1000  # Dano a cada 1 segundo
 
     def update(self):
+        now = pygame.time.get_ticks()
+        
         # Verifica se o efeito de susto acabou
-        if self.is_scared and pygame.time.get_ticks() >= self.scare_end_time:
+        if self.is_scared and now >= self.scare_end_time:
             self.is_scared = False
+        
+        # Processa o efeito de veneno
+        if self.is_poisoned:
+            if now >= self.poison_end_time:
+                self.is_poisoned = False
+                print(f"Caipora em ({self.grid_x}, {self.grid_y}) não está mais envenenada!")
+            elif now - self.last_poison_tick >= self.poison_tick_rate:
+                self.health -= self.poison_damage
+                self.last_poison_tick = now
+                print(f"Caipora em ({self.grid_x}, {self.grid_y}) sofreu {self.poison_damage} de dano de veneno! Vida: {self.health}")
         
         self.alvo_na_linha = any(e for e in inimigos_grupo if e.grid_y == self.grid_y and e.rect.right > self.rect.right)
         
@@ -55,10 +74,18 @@ class Caipora(Defense):
                 self.animation_timer = 0
     
     def get_scared(self, duration):
-        # Método chamado quando o Bicho-Papão assusta a Caipora.
+        """Método chamado quando o Bicho-Papão assusta a Caipora."""
         self.is_scared = True
         self.scare_end_time = pygame.time.get_ticks() + duration
         print(f"Caipora em ({self.grid_x}, {self.grid_y}) foi assustada por {duration}ms!")
+    
+    def get_poisoned(self, damage, duration):
+        """Método chamado quando a Bruxa envenena a Caipora."""
+        self.is_poisoned = True
+        self.poison_damage = damage
+        self.poison_end_time = pygame.time.get_ticks() + duration
+        self.last_poison_tick = pygame.time.get_ticks()
+        print(f"Caipora em ({self.grid_x}, {self.grid_y}) foi envenenada por {duration}ms!")
             
     def atirar(self):
         Arrow(self.rect.centerx, self.rect.centery, self.grid_y)

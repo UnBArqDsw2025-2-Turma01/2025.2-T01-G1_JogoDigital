@@ -13,6 +13,7 @@ GRID_OFFSET_X = 50
 GRID_OFFSET_Y = 150  
 TAMANHO_CAIPORA = TAMANHO_QUADRADO
 TAMANHO_BP = 130 # Bicho Papão maior
+TAMANHO_BRUXA = 120 # Bruxa
 
 # Dimensões calculadas da tela (para o ScreenManager)
 LARGURA_TELA = NUM_COLUNAS * TAMANHO_QUADRADO + (2 * GRID_OFFSET_X)

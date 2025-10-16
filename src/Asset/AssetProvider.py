@@ -42,6 +42,25 @@ class AssetProvider:
                 for img in bp_walk
             ]
 
+            # BRUXA
+            bruxa_walk = [
+                pygame.image.load(os.path.join(base_dir, 'characters', 'enemies', 'bruxa', f'bruxa_walk{i}.png')).convert_alpha()
+                for i in range(1, 4)
+            ]
+            cls.ASSETS['bruxa_walk'] = [
+                pygame.transform.scale(pygame.transform.flip(img, True, False), (TAMANHO_BRUXA, TAMANHO_BRUXA))
+                for img in bruxa_walk
+            ]
+            
+            bruxa_attack = [
+                pygame.image.load(os.path.join(base_dir, 'characters', 'enemies', 'bruxa', f'bruxa_attack{i}.png')).convert_alpha()
+                for i in range(1, 4)
+            ]
+            cls.ASSETS['bruxa_attack'] = [
+                pygame.transform.scale(pygame.transform.flip(img, True, False), (TAMANHO_BRUXA, TAMANHO_BRUXA))
+                for img in bruxa_attack
+            ]
+
             print("Assets carregados com sucesso.")
 
         except pygame.error as e:
