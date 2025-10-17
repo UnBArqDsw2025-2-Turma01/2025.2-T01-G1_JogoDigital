@@ -6,31 +6,6 @@ from Template.PhysicsEngine import PhysicsEngine
 from View.ViewRenderer import ViewRenderer
 from Template.UIConfigs import FPS
 
-"""
-COMENTÁRIOS PARA ENTENDER A NOVA ESTRUTURA DO CÓDIGO:
-1. Inicialização:
-    - Pygame é inicializado pelo ScreenManager.
-    - ViewRenderer Hub gerencia todas as screens (lazy loading + cache).
-    - A tela inicial é definida via ScreenManager.
-    - ❌ NÃO importar screens diretamente (GameScreen, MenuScreen)
-    - ✅ USAR ViewRenderer Hub para tudo
-
-2. Loop Principal:
-    Enquanto o jogo estiver rodando:
-        a) Eventos:
-            - Captura eventos do Pygame (teclado, mouse, quit).
-            - ScreenManager encaminha eventos via ViewRenderer Hub.
-            - Cada tela trata seus próprios eventos (ex: cliques, teclas de atalho).
-        
-        b) Atualização (Update):
-            - ScreenManager atualiza via ViewRenderer Hub.
-            - Lógica de jogo é SEPARADA da renderização.
-
-        c) Renderização (Draw):
-            - ScreenManager desenha via ViewRenderer Hub.
-            - O display é atualizado (pygame.display.flip()).
-"""
-
 class GameMain:
     def __init__(self):
         # 1. Inicializa Pygame e carrega Assets

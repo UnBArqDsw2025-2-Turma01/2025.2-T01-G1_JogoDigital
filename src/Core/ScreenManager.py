@@ -43,18 +43,6 @@ class ScreenManager:
     @classmethod
     def get_relogio(cls):
         return cls.RELOGIO
-
-    # --- 2. Sistema de telas ---
-    @classmethod
-    def registrar_telas(cls, telas_dict):
-        """
-        [LEGADO] Recebe um dicionário com instâncias de telas.
-        Exemplo: { 'menu': MenuScreen(), 'jogo': GameScreen() }
-        
-        ⚠️ DEPRECADO: Use registrar_screens_via_hub() para usar o ViewRenderer Hub.
-        """
-        cls._telas = telas_dict
-        print("[ScreenManager] ⚠️ AVISO: Usando registro legado. Considere usar registrar_screens_via_hub()")
     
     @classmethod
     def registrar_screens_via_hub(cls, screen_names):
