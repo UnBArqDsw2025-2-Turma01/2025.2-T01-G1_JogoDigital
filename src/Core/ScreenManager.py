@@ -47,13 +47,15 @@ class ScreenManager:
     @classmethod
     def registrar_screens_via_hub(cls, screen_names):
         """
-        ✅ RECOMENDADO: Registra screens via ViewRenderer Hub.
+        Registra screens via ViewRenderer Hub.
         ViewRenderer criará as instâncias via lazy loading.
+        Também registra handlers de input para cada screen no InputHandler.
         
         Args:
             screen_names: Lista de nomes de screens ['menu', 'jogo']
         """
         from View.ViewRenderer import ViewRenderer
+        from View.InputHandler import InputHandler
         cls._usar_view_hub = True
         
         # Pré-carrega screens no Hub (opcional, lazy loading é automático)
@@ -61,8 +63,33 @@ class ScreenManager:
             screen = ViewRenderer.get_screen(name)
             if screen:
                 cls._telas[name] = screen
+                # Registra handler de input para a screen
+                cls._registrar_handler_input_screen(name, screen)
         
-        print(f"[ScreenManager] ✅ Screens registradas via ViewRenderer Hub: {screen_names}")
+        print(f"[ScreenManager] Screens registradas via ViewRenderer Hub: {screen_names}")
+        print(f"[ScreenManager] Handlers de input registrados no InputHandler")
+    
+    @classmethod
+    def _registrar_handler_input_screen(cls, screen_name: str, screen):
+        """Registra handler de input para uma screen no InputHandler Hub."""
+        from View.InputHandler import InputHandler
+        
+        def screen_handler(event):
+            """Handler que encaminha evento para a screen ou modal ativo."""
+            # Prioridade: Modais > Screen
+            if cls._modals:
+                top_modal = cls._modals[-1]
+                result = top_modal.handle_event(event)
+                if result == 'close':
+                    cls.pop_modal()
+                return True  # Evento consumido pelo modal
+            
+            # Se não há modal, encaminha para screen
+            if cls._tela_atual and cls._tela_atual_nome == screen_name:
+                cls._tela_atual.handle_event(event)
+            return False
+        
+        InputHandler.registrar_handler_screen(screen_name, screen_handler)
 
     @classmethod
     def set_tela(cls, nome_tela):
@@ -83,7 +110,7 @@ class ScreenManager:
                 from View.ViewRenderer import ViewRenderer
                 ViewRenderer.set_current_screen(nome_tela)
         else:
-            print(f"[ScreenManager] ⚠️ ERRO: Screen '{nome_tela}' não encontrada")
+            print(f"[ScreenManager] ERRO: Screen '{nome_tela}' não encontrada")
 
     @classmethod
     def get_tela_atual(cls):
@@ -91,21 +118,19 @@ class ScreenManager:
 
     @classmethod
     def handle_events(cls):
-        """Encaminha eventos para a tela atual."""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            # Eventos vão primeiro para o modal no topo (se houver)
-            if cls._modals:
-                top = cls._modals[-1]
-                res = top.handle_event(event)
-                # se modal indicar fechar com 'close', desempilha
-                if res == 'close':
-                    cls.pop_modal()
-                continue
-            if cls._tela_atual:
-                cls._tela_atual.handle_event(event)
-        return True
+        """
+        Processa eventos através do InputHandler Hub.
+        O InputHandler já captura pygame.event.get() e distribui para handlers registrados.
+        """
+        from View.InputHandler import InputHandler
+        
+        continuar = InputHandler.processar_eventos(screen_name=cls._tela_atual_nome)
+        
+        # Se não estiver usando handlers registrados no InputHandler,
+        # a screen atual pode processar eventos diretamente via handle_event()
+        # (isto será migrado gradualmente para usar handlers registrados)
+        
+        return continuar
 
     @classmethod
     def update(cls):

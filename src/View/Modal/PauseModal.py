@@ -44,10 +44,6 @@ class PauseModal(Modal):
             for name, rect in self.rects.items():
                 if rect.collidepoint(x, y):
                     print(f"Clicou no botão {name}")
-                    
-
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            ScreenManager.pop_modal()
 
     def draw(self, surface):
         # Fundo escurecido
