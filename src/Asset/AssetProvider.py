@@ -152,6 +152,33 @@ class AssetProvider:
                     pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_100_click.png')).convert_alpha(),
                     (150, 20)
                 ),
+                
+                # MENU PRINCIPAL
+                'menu_principal': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen.png')
+                ).convert_alpha(),
+                
+                # Botões do Menu Principal
+                'menu_btn_jogar': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button3.png')
+                ).convert_alpha(),
+                'menu_btn_jogar_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click1.png')
+                ).convert_alpha(),
+                
+                'menu_btn_loja': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button2.png')
+                ).convert_alpha(),
+                'menu_btn_loja_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click2.png')
+                ).convert_alpha(),
+                
+                'menu_btn_creditos': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button1.png')
+                ).convert_alpha(),
+                'menu_btn_creditos_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click3.png')
+                ).convert_alpha(),
                 })
 
             print("Assets carregados com sucesso.")

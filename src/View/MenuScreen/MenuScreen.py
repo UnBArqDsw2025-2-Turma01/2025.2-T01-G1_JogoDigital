@@ -23,9 +23,7 @@ class MenuScreen(BaseScreen):
             if event.key == pygame.K_RETURN:
                 from Core.ScreenManager import ScreenManager
                 ScreenManager.set_tela("jogo")
-            elif event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                exit()
+            # ESC agora é tratado pelo InputHandler global
         elif event.type == pygame.MOUSEMOTION:
             x, y = event.pos
             self.hover_states[0] = self.start_rect.collidepoint(x, y)

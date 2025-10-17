@@ -1,5 +1,6 @@
 import pygame
-from Model.Entities import caiporas_grupo, inimigos_grupo, projeteis_grupo, guaranas_grupo, Guarana
+from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo, guaranas_grupo
+from Model.Items.guarana import Guarana
 from Template.PhysicsEngine import PhysicsEngine
 from Template.TemplateRenderer import TemplateRenderer
 from View.UIRenderer import UIRenderer
@@ -28,11 +29,9 @@ class GameScreenRenderer:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
+        
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
-                self.state_vars['GAME_PAUSED'] = not self.state_vars['GAME_PAUSED']
-            elif event.key == pygame.K_m:
+            if event.key == pygame.K_m:
                 ScreenManager.set_tela("menu")
 
         elif event.type == pygame.MOUSEBUTTONDOWN:

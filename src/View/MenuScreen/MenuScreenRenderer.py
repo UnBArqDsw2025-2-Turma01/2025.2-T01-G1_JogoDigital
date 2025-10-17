@@ -1,7 +1,7 @@
 import pygame
-import os
 from View.UIRenderer import UIRenderer
 from Core.ScreenManager import ScreenManager
+from Asset.AssetProvider import AssetProvider
 
 class MenuScreenRenderer:
     """Renderer específico da tela de menu, cuidando de UI e eventos."""
@@ -13,15 +13,14 @@ class MenuScreenRenderer:
         self.credits_rect = screen.credits_rect
         self.font_titulo = screen.font_titulo
         self.font_sub = screen.font_sub
-        import os
-        # Carrega imagens dos botões
-        base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'Asset', 'menu', 'menu_screen')
-        self.btn_jogar = pygame.image.load(os.path.join(base, 'main_screen_button3.png')).convert_alpha()
-        self.btn_jogar_hover = pygame.image.load(os.path.join(base, 'main_screen_button_click1.png')).convert_alpha()
-        self.btn_loja = pygame.image.load(os.path.join(base, 'main_screen_button2.png')).convert_alpha()
-        self.btn_loja_hover = pygame.image.load(os.path.join(base, 'main_screen_button_click2.png')).convert_alpha()
-        self.btn_creditos = pygame.image.load(os.path.join(base, 'main_screen_button1.png')).convert_alpha()
-        self.btn_creditos_hover = pygame.image.load(os.path.join(base, 'main_screen_button_click3.png')).convert_alpha()
+        
+        self.btn_jogar = AssetProvider.get('menu_btn_jogar')
+        self.btn_jogar_hover = AssetProvider.get('menu_btn_jogar_hover')
+        self.btn_loja = AssetProvider.get('menu_btn_loja')
+        self.btn_loja_hover = AssetProvider.get('menu_btn_loja_hover')
+        self.btn_creditos = AssetProvider.get('menu_btn_creditos')
+        self.btn_creditos_hover = AssetProvider.get('menu_btn_creditos_hover')
+        self.menu_img = AssetProvider.get('menu_principal')
 
 
     def update(self):
@@ -29,12 +28,8 @@ class MenuScreenRenderer:
         pass
 
     def draw(self, surface, hover_states):
-        # Fundo com imagem cortada
-        menu_img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'Asset', 'menu', 'menu_screen', 'main_screen.png')
-        menu_img_path = os.path.normpath(menu_img_path)
-        menu_img = pygame.image.load(menu_img_path).convert_alpha()
         area = pygame.Rect(0, 0, surface.get_width(), surface.get_height())
-        surface.blit(menu_img, (0, 0), area)
+        surface.blit(self.menu_img, (0, 0), area)
 
         # Botões com hover
         btns = [
@@ -59,5 +54,3 @@ class MenuScreenRenderer:
             rect.height = btn_img.get_height()
             surface.blit(btn_img, (x, y))
             y += btn_img.get_height() + gap
-
-        pygame.display.flip()

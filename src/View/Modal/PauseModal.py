@@ -6,11 +6,17 @@ from Core.ScreenManager import ScreenManager
 class PauseModal(Modal):
     def __init__(self):
         super().__init__(blocks_update=True)
+        self.scale_factor = 0.8
 
-        # Fundo do menu pausa
+        # integração engine
+        self._input_registered = False
+        self._view_registered = False
+        self._input_reg_info = None
+        self._view_reg_info = None
+
+        # assets / UI
         self.menu_img = AssetProvider.get('menu_pausa')
 
-        # escala segura (usa smoothscale se necessário)
         def _scale_img(img, factor):
             if not img:
                 return None
@@ -21,27 +27,46 @@ class PauseModal(Modal):
             except Exception:
                 return img
 
-        scale_factor = 0.8
+        def _scale_width(img, width_factor, height_scale=1.0):
+            if not img:
+                return None
+            try:
+                new_w = max(1, int(img.get_width() * width_factor))
+                new_h = max(1, int(img.get_height() * height_scale))
+                return pygame.transform.smoothscale(img, (new_w, new_h))
+            except Exception:
+                return img
 
-        # Botões
-        def _get_pair(key_normal, key_hover, factor=scale_factor):
+        def _get_pair(key_normal, key_hover, factor=self.scale_factor):
             n = AssetProvider.get(key_normal)
             h = AssetProvider.get(key_hover)
-            n = _scale_img(n, factor) if n else pygame.Surface((int(200*factor), int(60*factor)), pygame.SRCALPHA)
-            h = _scale_img(h, factor) if h else n
-            return {'normal': n, 'hover': h}
+            n_s = _scale_img(n, factor) if n else pygame.Surface((int(200*factor), int(60*factor)), pygame.SRCALPHA)
+            h_s = _scale_img(h, factor) if h else n_s
+            return {'normal': n_s, 'hover': h_s}
 
-        # botões música, efeito, tutorial
+        def _get_pair_width(key_normal, key_hover, width_factor, height_scale=self.scale_factor):
+            n = AssetProvider.get(key_normal)
+            h = AssetProvider.get(key_hover)
+            if n:
+                n_s = _scale_width(n, width_factor, height_scale)
+            else:
+                n_s = pygame.Surface((int(200*width_factor), int(60*height_scale)), pygame.SRCALPHA)
+            if h:
+                h_s = _scale_width(h, width_factor, height_scale)
+            else:
+                h_s = n_s
+            return {'normal': n_s, 'hover': h_s}
+
+        # botões
         self.btns = {
             'musica': _get_pair('btn_musica', 'btn_musica_hover', factor=0.75),
-            'efeito': _get_pair('btn_efeito', 'btn_efeito_hover', factor=0.85),
+            'efeito': _get_pair_width('btn_efeito', 'btn_efeito_hover', width_factor=0.9, height_scale=0.75),
             'tutorial': _get_pair('btn_tutorial', 'btn_tutorial_hover', factor=0.75),
         }
-
         # botão "Sair da Partida"
-        self.sair_btn = _get_pair('btn_sair', 'btn_sair_hover', factor=1.30)
+        self.sair_btn = _get_pair_width('btn_sair', 'btn_sair_hover', width_factor=1.25, height_scale=0.9)
 
-        # Icons e barras
+        # icons / barras
         self.icon_on = AssetProvider.get('icon_som') or AssetProvider.get('icon_som_normal')
         self.icon_off = AssetProvider.get('icon_mute') or AssetProvider.get('icon_som_mute')
 
@@ -53,18 +78,18 @@ class PauseModal(Modal):
             ('barra_volume_100', 'barra_volume_100_houver'),
         ]
 
+        # estados
         self.hover = {k: False for k in self.btns.keys()}
         self.sair_hover = False
         self.rects = {}
 
-        # Volume inicial (tenta pegar do ScreenManager)
+        # volumes
         self.music_volume = getattr(ScreenManager, 'MUSIC_VOLUME', 1.0)
         self.music_muted = not getattr(ScreenManager, 'MUSIC_ON', True)
-
         self.sfx_volume = getattr(ScreenManager, 'SFX_VOLUME', 1.0)
         self.sfx_muted = not getattr(ScreenManager, 'SFX_ON', True)
 
-        # slider/icon rects serão definidos no draw (dependem de posição do menu)
+        # rects definidos no draw
         self.icon_music_rect = pygame.Rect(0,0,0,0)
         self.slider_music_rect = pygame.Rect(0,0,0,0)
         self.icon_sfx_rect = pygame.Rect(0,0,0,0)
@@ -73,10 +98,12 @@ class PauseModal(Modal):
         self.dragging_music = False
         self.dragging_sfx = False
 
+        # tenta integrar com InputHandler / ViewRenderer
+        self._try_integrate_with_engine()
+
     def _volume_step_index(self, vol):
         steps = [0.0, 0.25, 0.5, 0.75, 1.0]
-        idx = min(range(len(steps)), key=lambda i: abs(steps[i] - vol))
-        return idx
+        return min(range(len(steps)), key=lambda i: abs(steps[i] - vol))
 
     def _apply_music_volume(self, vol):
         vol = max(0.0, min(1.0, vol))
@@ -103,7 +130,6 @@ class PauseModal(Modal):
         if ScreenManager:
             setattr(ScreenManager, 'SFX_VOLUME', self.sfx_volume)
             setattr(ScreenManager, 'SFX_ON', not self.sfx_muted)
-        # deve ler ScreenManager.SFX_VOLUME ao tocar efeitos.
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEMOTION:
@@ -124,11 +150,9 @@ class PauseModal(Modal):
 
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             x, y = event.pos
-            # clique nos botões menores
             for name, rect in self.rects.items():
                 if rect.collidepoint(x, y):
                     if name == 'musica':
-                        # alterna mute/restore
                         self.music_muted = not self.music_muted
                         if self.music_muted:
                             self._apply_music_volume(0.0)
@@ -136,7 +160,6 @@ class PauseModal(Modal):
                             self._apply_music_volume(1.0)
                         return True
                     if name == 'efeito':
-                        # alterna mute/restore para SFX
                         self.sfx_muted = not self.sfx_muted
                         if self.sfx_muted:
                             self._apply_sfx_volume(0.0)
@@ -147,15 +170,13 @@ class PauseModal(Modal):
                         print("Abrir tutorial (implementar)")
                         return True
 
-            # clique no botão sair
             if getattr(self, 'sair_rect', pygame.Rect(0,0,0,0)).collidepoint(x, y):
                 try:
                     ScreenManager.pop_modal()
                 except Exception:
                     pass
                 if ScreenManager:
-                    # tenta várias APIs possíveis
-                    for method in ('set_tela','set_screen','change_screen','change','goto','go_to','set_screen'):
+                    for method in ('set_tela','set_screen','change_screen','change','goto','go_to'):
                         if hasattr(ScreenManager, method):
                             try:
                                 getattr(ScreenManager, method)('menu')
@@ -164,7 +185,6 @@ class PauseModal(Modal):
                             break
                 return True
 
-            # clique nos ícones
             if self.icon_music_rect.collidepoint(x, y):
                 self.music_muted = not self.music_muted
                 if self.music_muted:
@@ -180,7 +200,6 @@ class PauseModal(Modal):
                     self._apply_sfx_volume(1.0)
                 return True
 
-            # clique nas barras -> inicia dragging e aplica passo
             if self.slider_music_rect.collidepoint(x, y):
                 self.dragging_music = True
                 rel_x = x - self.slider_music_rect.x
@@ -323,3 +342,116 @@ class PauseModal(Modal):
             fill_w = int(self.sfx_volume * self.slider_sfx_rect.w)
             pygame.draw.rect(surface, (140,180,100), (self.slider_sfx_rect.x, self.slider_sfx_rect.y, fill_w, self.slider_sfx_rect.h), border_radius=4)
             pygame.draw.rect(surface, (200,200,200), self.slider_sfx_rect, 2, border_radius=4)
+
+
+    def _try_integrate_with_engine(self):
+        try:
+            from Core import InputHandler as IH_mod
+        except Exception:
+            IH_mod = None
+        if IH_mod is None:
+            try:
+                from Core.InputHandler import InputHandler as IH_mod
+            except Exception:
+                IH_mod = None
+
+        if IH_mod:
+            candidates = ('register_listener', 'add_listener', 'subscribe', 'add_handler', 'push_modal', 'attach')
+            for name in candidates:
+                fn = getattr(IH_mod, name, None)
+                if callable(fn):
+                    try:
+                        fn(self.handle_event)
+                        self._input_registered = True
+                        self._input_reg_info = (IH_mod, name, 'call(handle_event)')
+                        break
+                    except TypeError:
+                        try:
+                            fn(self)
+                            self._input_registered = True
+                            self._input_reg_info = (IH_mod, name, 'call(self)')
+                            break
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
+
+        try:
+            from Core import ViewRenderer as VR_mod
+        except Exception:
+            VR_mod = None
+        if VR_mod is None:
+            try:
+                from Core.ViewRenderer import ViewRenderer as VR_mod
+            except Exception:
+                VR_mod = None
+
+        if VR_mod:
+            def _render_wrapper(surface):
+                try:
+                    self.draw(surface)
+                except Exception:
+                    pass
+
+            candidates = ('register_view', 'register_layer', 'add_view', 'add_layer', 'register_modal', 'push_layer')
+            for name in candidates:
+                fn = getattr(VR_mod, name, None)
+                if callable(fn):
+                    try:
+                        fn(_render_wrapper)
+                        self._view_registered = True
+                        self._view_reg_info = (VR_mod, name, 'call(wrapper)')
+                        break
+                    except TypeError:
+                        try:
+                            fn(self)
+                            self._view_registered = True
+                            self._view_reg_info = (VR_mod, name, 'call(self)')
+                            break
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
+
+    def unregister_from_engine(self):
+        if self._input_registered and self._input_reg_info:
+            try:
+                IH_mod, name, mode = self._input_reg_info
+                remove_candidates = ('unregister_listener', 'remove_listener', 'unsubscribe', 'remove_handler', 'pop_modal', 'detach')
+                for rn in remove_candidates:
+                    rem = getattr(IH_mod, rn, None)
+                    if callable(rem):
+                        try:
+                            if mode == 'call(handle_event)':
+                                rem(self.handle_event)
+                            else:
+                                rem(self)
+                            break
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            finally:
+                self._input_registered = False
+                self._input_reg_info = None
+
+        if self._view_registered and self._view_reg_info:
+            try:
+                VR_mod, name, mode = self._view_reg_info
+                remove_candidates = ('unregister_view', 'remove_view', 'remove_layer', 'pop_layer', 'unregister_modal')
+                for rn in remove_candidates:
+                    rem = getattr(VR_mod, rn, None)
+                    if callable(rem):
+                        try:
+                            if mode == 'call(wrapper)':
+                                rem(self.draw)
+                            else:
+                                rem(self)
+                            break
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            finally:
+                self._view_registered = False
+                self._view_reg_info = None
