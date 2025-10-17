@@ -5,31 +5,29 @@ from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo
 from Template.PhysicsEngine import PhysicsEngine
 from View.ViewRenderer import ViewRenderer
 from Template.UIConfigs import FPS
-from View.MenuScreen.MenuScreen import MenuScreen
-from View.GameScreen.GameScreen import GameScreen
 
 """
 COMENTÁRIOS PARA ENTENDER A NOVA ESTRUTURA DO CÓDIGO:
 1. Inicialização:
     - Pygame é inicializado pelo ScreenManager.
-    - Todas as telas são registradas no ScreenManager.
-    - A tela inicial (MenuScreen) é definida e a partir dela outras são acessadas.
+    - ViewRenderer Hub gerencia todas as screens (lazy loading + cache).
+    - A tela inicial é definida via ScreenManager.
+    - ❌ NÃO importar screens diretamente (GameScreen, MenuScreen)
+    - ✅ USAR ViewRenderer Hub para tudo
 
 2. Loop Principal:
     Enquanto o jogo estiver rodando:
         a) Eventos:
             - Captura eventos do Pygame (teclado, mouse, quit).
-            - Encaminha os eventos para a tela atual.
+            - ScreenManager encaminha eventos via ViewRenderer Hub.
             - Cada tela trata seus próprios eventos (ex: cliques, teclas de atalho).
-            - (OU SEJA, CADA TELA LIDA COM OS PRÓPRIOS EVENTOS - Input Handler).
         
         b) Atualização (Update):
-            - A tela atual atualiza seu estado (ex: movimentação, física, colisões).
+            - ScreenManager atualiza via ViewRenderer Hub.
             - Lógica de jogo é SEPARADA da renderização.
 
         c) Renderização (Draw):
-            - A tela atual desenha todos os elementos visuais (mapa, sprites, UI).
-            - UI global ou específica da tela é desenhada via renderer.
+            - ScreenManager desenha via ViewRenderer Hub.
             - O display é atualizado (pygame.display.flip()).
 """
 
@@ -38,8 +36,8 @@ class GameMain:
         # 1. Inicializa Pygame e carrega Assets
         ScreenManager.inicializar_pygame()
         
-        # 2. Inicializa as fontes APÓS o Pyga estar pronto
-        ViewRenderer.inicializar_fontes() 
+        # 2. Inicializa o ViewRenderer Hub (fontes e recursos)
+        ViewRenderer.inicializar()
         
         # 3. Inicializa o Mapa e as Entidades Iniciais
         Level.inicializar_mapa()
@@ -50,12 +48,8 @@ class GameMain:
             'GAME_PAUSED': False
         }
 
-        telas = {
-            "menu": MenuScreen(),
-            "jogo": GameScreen()
-        }
-
-        ScreenManager.registrar_telas(telas)
+        # Registra nomes de screens (ViewRenderer cria as instâncias automaticamente)
+        ScreenManager.registrar_screens_via_hub(["menu", "jogo"])
         ScreenManager.set_tela("menu")
 
     def update(self):

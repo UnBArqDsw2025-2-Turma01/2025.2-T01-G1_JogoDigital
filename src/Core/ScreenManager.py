@@ -4,11 +4,18 @@ from Template.UIConfigs import *
 from Asset.AssetProvider import AssetProvider
 
 class ScreenManager:
+    """
+    Gerenciador central de telas, modais e renderização.
+    Pode trabalhar tanto com instâncias de Screen diretas
+    quanto através do ViewRenderer Hub (padrão Facade).
+    """
     TELA = None
     RELOGIO = None
     _telas = {}
     _tela_atual = None
+    _tela_atual_nome = None  # nome da tela atual (para ViewRenderer Hub)
     _modals = []  # pilha de modais/overlays
+    _usar_view_hub = False  # flag para usar ViewRenderer como Hub
 
     # --- 1. Inicialização global ---
     @classmethod
@@ -41,16 +48,54 @@ class ScreenManager:
     @classmethod
     def registrar_telas(cls, telas_dict):
         """
-        Recebe um dicionário com todas as telas do jogo.
+        [LEGADO] Recebe um dicionário com instâncias de telas.
         Exemplo: { 'menu': MenuScreen(), 'jogo': GameScreen() }
+        
+        ⚠️ DEPRECADO: Use registrar_screens_via_hub() para usar o ViewRenderer Hub.
         """
         cls._telas = telas_dict
+        print("[ScreenManager] ⚠️ AVISO: Usando registro legado. Considere usar registrar_screens_via_hub()")
+    
+    @classmethod
+    def registrar_screens_via_hub(cls, screen_names):
+        """
+        ✅ RECOMENDADO: Registra screens via ViewRenderer Hub.
+        ViewRenderer criará as instâncias via lazy loading.
+        
+        Args:
+            screen_names: Lista de nomes de screens ['menu', 'jogo']
+        """
+        from View.ViewRenderer import ViewRenderer
+        cls._usar_view_hub = True
+        
+        # Pré-carrega screens no Hub (opcional, lazy loading é automático)
+        for name in screen_names:
+            screen = ViewRenderer.get_screen(name)
+            if screen:
+                cls._telas[name] = screen
+        
+        print(f"[ScreenManager] ✅ Screens registradas via ViewRenderer Hub: {screen_names}")
 
     @classmethod
     def set_tela(cls, nome_tela):
         """Troca a tela atual."""
+        # Se estiver usando Hub e tela não foi carregada, busca no ViewRenderer
+        if cls._usar_view_hub and nome_tela not in cls._telas:
+            from View.ViewRenderer import ViewRenderer
+            screen = ViewRenderer.get_screen(nome_tela)
+            if screen:
+                cls._telas[nome_tela] = screen
+        
         if nome_tela in cls._telas:
             cls._tela_atual = cls._telas[nome_tela]
+            cls._tela_atual_nome = nome_tela
+            
+            # Se estiver usando ViewRenderer Hub, notifica
+            if cls._usar_view_hub:
+                from View.ViewRenderer import ViewRenderer
+                ViewRenderer.set_current_screen(nome_tela)
+        else:
+            print(f"[ScreenManager] ⚠️ ERRO: Screen '{nome_tela}' não encontrada")
 
     @classmethod
     def get_tela_atual(cls):
@@ -103,3 +148,20 @@ class ScreenManager:
     def pop_modal(cls):
         if cls._modals:
             cls._modals.pop()
+    
+    # --- Métodos para usar ViewRenderer como Hub (opcional) ---
+    @classmethod
+    def habilitar_view_hub(cls):
+        """
+        Habilita o uso do ViewRenderer como Hub/Facade.
+        Quando habilitado, usa ViewRenderer para gerenciar screens.
+        """
+        cls._usar_view_hub = True
+        from View.ViewRenderer import ViewRenderer
+        ViewRenderer.inicializar()
+        print("[ScreenManager] ViewRenderer Hub habilitado")
+    
+    @classmethod
+    def usar_view_hub(cls) -> bool:
+        """Retorna se está usando ViewRenderer como Hub."""
+        return cls._usar_view_hub

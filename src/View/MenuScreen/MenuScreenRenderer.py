@@ -59,5 +59,3 @@ class MenuScreenRenderer:
             rect.height = btn_img.get_height()
             surface.blit(btn_img, (x, y))
             y += btn_img.get_height() + gap
-
-        pygame.display.flip()
