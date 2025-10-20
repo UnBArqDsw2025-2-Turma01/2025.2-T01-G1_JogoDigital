@@ -179,6 +179,13 @@ class AssetProvider:
                 'menu_btn_creditos_hover': pygame.image.load(
                     os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click3.png')
                 ).convert_alpha(),
+
+                'menu_btn_config': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'botao_config.png')
+                ).convert_alpha(),
+                'menu_btn_config_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'botao_config_click.png')
+                ).convert_alpha(),
                 })
 
             print("Assets carregados com sucesso.")
