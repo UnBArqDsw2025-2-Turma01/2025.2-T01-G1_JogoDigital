@@ -29,11 +29,9 @@ class GameScreenRenderer:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
+        
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
-                self.state_vars['GAME_PAUSED'] = not self.state_vars['GAME_PAUSED']
-            elif event.key == pygame.K_m:
+            if event.key == pygame.K_m:
                 ScreenManager.set_tela("menu")
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
