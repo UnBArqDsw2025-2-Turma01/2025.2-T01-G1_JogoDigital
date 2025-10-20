@@ -168,6 +168,27 @@ class AssetProvider:
                     pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_100_click.png')).convert_alpha(),
                     (150, 20)
                 ),
+
+                # MENU CONFIGURAÇÕES
+                'menu_config': pygame.image.load(
+                    os.path.join(base_dir, 'menu_config', 'menu_config.png')
+                ).convert_alpha(),
+                'btn_voltar': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_voltar.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_voltar_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_voltar_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_salvar': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_salvar.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_salvar_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_salvar_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
                 
                 # MENU PRINCIPAL
                 'menu_principal': pygame.image.load(
@@ -194,6 +215,13 @@ class AssetProvider:
                 ).convert_alpha(),
                 'menu_btn_creditos_hover': pygame.image.load(
                     os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click3.png')
+                ).convert_alpha(),
+
+                'menu_btn_config': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'botao_config.png')
+                ).convert_alpha(),
+                'menu_btn_config_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'botao_config_click.png')
                 ).convert_alpha(),
                 })
             

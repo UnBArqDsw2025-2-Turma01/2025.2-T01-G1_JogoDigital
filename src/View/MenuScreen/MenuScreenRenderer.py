@@ -11,6 +11,7 @@ class MenuScreenRenderer:
         self.start_rect = screen.start_rect
         self.shop_rect = screen.shop_rect
         self.credits_rect = screen.credits_rect
+        self.config_rect = screen.config_rect
         self.font_titulo = screen.font_titulo
         self.font_sub = screen.font_sub
         
@@ -21,6 +22,9 @@ class MenuScreenRenderer:
         self.btn_creditos = AssetProvider.get('menu_btn_creditos')
         self.btn_creditos_hover = AssetProvider.get('menu_btn_creditos_hover')
         self.menu_img = AssetProvider.get('menu_principal')
+        self.btn_config = AssetProvider.get('menu_btn_config')
+        self.btn_config_hover = AssetProvider.get('menu_btn_config_hover')
+
 
 
     def update(self):
@@ -35,22 +39,41 @@ class MenuScreenRenderer:
         btns = [
             (self.start_rect, self.btn_jogar, self.btn_jogar_hover, hover_states[0]),
             (self.shop_rect, self.btn_loja, self.btn_loja_hover, hover_states[1]),
-            (self.credits_rect, self.btn_creditos, self.btn_creditos_hover, hover_states[2])
+            (self.credits_rect, self.btn_creditos, self.btn_creditos_hover, hover_states[2]),
+            (self.config_rect, self.btn_config, self.btn_config_hover, hover_states[3]),
         ]
-        gap = 20  # pixels entre botões
-        margin_bottom = 200
-        total_height = sum(btn_img.get_height() for _, btn_img, _, _ in btns) + gap * (len(btns) - 1)
-        start_y = surface.get_height() - total_height - margin_bottom
-        y = start_y
 
-        for idx, (rect, img, img_hover, hovered) in enumerate(btns):
+        primary_btns = btns[:-1]
+        config_btn = btns[-1]
+
+        gap = 20
+        margin_bottom = 230
+
+        total_height_primary = sum(b[1].get_height() for b in primary_btns) + gap * (len(primary_btns) - 1)
+        start_y = surface.get_height() - total_height_primary - margin_bottom
+        y = start_y
+        center_x = surface.get_width() // 2
+
+        for rect, img, img_hover, hovered in primary_btns:
             btn_img = img_hover if hovered else img
-            x = (surface.get_width() - btn_img.get_width()) // 2
-            btn_rect = pygame.Rect(x, y, btn_img.get_width(), btn_img.get_height())
-            # Atualiza o rect para hover correto
+            x = center_x - btn_img.get_width() // 2
             rect.left = x
             rect.top = y
             rect.width = btn_img.get_width()
             rect.height = btn_img.get_height()
             surface.blit(btn_img, (x, y))
             y += btn_img.get_height() + gap
+
+        extra_between_config = 0
+        cfg_rect, cfg_img, cfg_img_hover, cfg_hovered = config_btn
+        cfg_img_to_draw = cfg_img_hover if cfg_hovered else cfg_img
+
+        y_config = y + extra_between_config - gap  
+        x_config = center_x - cfg_img_to_draw.get_width() // 2
+
+        cfg_rect.left = x_config
+        cfg_rect.top = y_config
+        cfg_rect.width = cfg_img_to_draw.get_width()
+        cfg_rect.height = cfg_img_to_draw.get_height()
+
+        surface.blit(cfg_img_to_draw, (x_config, y_config))
