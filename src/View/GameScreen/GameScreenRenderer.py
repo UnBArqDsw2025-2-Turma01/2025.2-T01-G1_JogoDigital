@@ -19,6 +19,7 @@ class GameScreenRenderer:
         self.state_vars = screen.state_vars
         self.add_rect = screen.add_rect
         self.pause_rect = screen.pause_rect
+        self.back_rect = screen.back_rect
         self.font = screen.font
         # Tempo para o próximo spawn (ms)
         self._tempo_proximo_spawn = 0
@@ -50,6 +51,10 @@ class GameScreenRenderer:
             # Botão PAUSE
             elif self.pause_rect.collidepoint(x, y):
                 self.state_vars['GAME_PAUSED'] = not self.state_vars['GAME_PAUSED']
+            
+            # Botão VOLTAR
+            elif self.back_rect.collidepoint(x, y):
+                ScreenManager.set_tela("level_select")
 
             # Grid para colocar Caipora
             elif self.state_vars['MODO_COLOCACAO_ATIVO']:
@@ -115,8 +120,14 @@ class GameScreenRenderer:
         # UI (botões)
         cor_add = (0, 200, 0) if self.state_vars['MODO_COLOCACAO_ATIVO'] else (100, 100, 100)
         cor_pause = (200, 0, 0) if self.state_vars['GAME_PAUSED'] else (50, 50, 50)
+        cor_back = (70, 70, 150)
         UIRenderer.desenhar_botao(surface, self.add_rect, cor_add, "ADICIONAR", self.font)
         UIRenderer.desenhar_botao(surface, self.pause_rect, cor_pause, "PAUSE", self.font)
+        UIRenderer.desenhar_botao(surface, self.back_rect, cor_back, "VOLTAR", self.font)
+        
+        if self.screen.current_level:
+            level_name = self.font.render(self.screen.current_level.name, True, (255, 255, 255))
+            surface.blit(level_name, (surface.get_width() - level_name.get_width() - 20, 70))
 
         # Desenha guaranás por cima de tudo
         guaranas_grupo.draw(surface)

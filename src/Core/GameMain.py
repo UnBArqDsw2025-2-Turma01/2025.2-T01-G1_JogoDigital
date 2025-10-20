@@ -7,6 +7,7 @@ from View.ViewRenderer import ViewRenderer
 from Template.UIConfigs import FPS
 from View.MenuScreen.MenuScreen import MenuScreen
 from View.GameScreen.GameScreen import GameScreen
+from View.LevelSelectScreen.LevelSelectScreen import LevelSelectScreen
 
 """
 COMENTÁRIOS PARA ENTENDER A NOVA ESTRUTURA DO CÓDIGO:
@@ -52,6 +53,7 @@ class GameMain:
 
         telas = {
             "menu": MenuScreen(),
+            "level_select": LevelSelectScreen(),
             "jogo": GameScreen()
         }
 

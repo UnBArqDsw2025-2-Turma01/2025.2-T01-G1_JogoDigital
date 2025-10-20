@@ -22,7 +22,7 @@ class MenuScreen(BaseScreen):
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 from Core.ScreenManager import ScreenManager
-                ScreenManager.set_tela("jogo")
+                ScreenManager.set_tela("level_select")
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 exit()
@@ -35,7 +35,7 @@ class MenuScreen(BaseScreen):
             x, y = event.pos
             if self.start_rect.collidepoint(x, y):
                 from Core.ScreenManager import ScreenManager
-                ScreenManager.set_tela("jogo")
+                ScreenManager.set_tela("level_select")
             elif self.shop_rect.collidepoint(x, y):
                 print("Abrir loja")
             elif self.credits_rect.collidepoint(x, y):
