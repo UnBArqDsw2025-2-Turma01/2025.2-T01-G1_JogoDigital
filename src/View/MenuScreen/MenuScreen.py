@@ -1,6 +1,7 @@
 import pygame
 from Template.BaseScreen import BaseScreen
 from Core.ScreenManager import ScreenManager
+from View.Modal.ConfigModal import ConfigModal
 from View.MenuScreen.MenuScreenRenderer import MenuScreenRenderer
 
 class MenuScreen(BaseScreen):
@@ -39,6 +40,9 @@ class MenuScreen(BaseScreen):
                 print("Abrir loja")
             elif self.credits_rect.collidepoint(x, y):
                 print("Mostrar créditos")
+            elif self.config_rect.collidepoint(x, y):
+                from Core.ScreenManager import ScreenManager
+                ScreenManager.push_modal(ConfigModal())
 
     def update(self):
         pass  # pode colocar animações do menu aqui depois
