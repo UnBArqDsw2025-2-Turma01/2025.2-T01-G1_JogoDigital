@@ -19,6 +19,9 @@ class AssetProvider:
                 (TAMANHO_QUADRADO, TAMANHO_QUADRADO)
             )
 
+            cls.ASSETS['scoreboard'] = pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'map_scoreboard.png')).convert_alpha()
+            
+
             # CAIPORA
             cls.ASSETS['caipora_attack'] = [
                 pygame.transform.scale(

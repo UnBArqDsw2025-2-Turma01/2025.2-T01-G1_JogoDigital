@@ -2,6 +2,8 @@ import pygame
 import os
 from Template.UIConfigs import *
 from Asset.AssetProvider import AssetProvider
+from View.ViewRenderer import ViewRenderer
+from View.InputHandler import InputHandler
 
 class ScreenManager:
     """
@@ -54,8 +56,6 @@ class ScreenManager:
         Args:
             screen_names: Lista de nomes de screens ['menu', 'jogo']
         """
-        from View.ViewRenderer import ViewRenderer
-        from View.InputHandler import InputHandler
         cls._usar_view_hub = True
         
         # Pré-carrega screens no Hub (opcional, lazy loading é automático)
@@ -72,7 +72,6 @@ class ScreenManager:
     @classmethod
     def _registrar_handler_input_screen(cls, screen_name: str, screen):
         """Registra handler de input para uma screen no InputHandler Hub."""
-        from View.InputHandler import InputHandler
         
         def screen_handler(event):
             """Handler que encaminha evento para a screen ou modal ativo."""
@@ -96,7 +95,6 @@ class ScreenManager:
         """Troca a tela atual."""
         # Se estiver usando Hub e tela não foi carregada, busca no ViewRenderer
         if cls._usar_view_hub and nome_tela not in cls._telas:
-            from View.ViewRenderer import ViewRenderer
             screen = ViewRenderer.get_screen(nome_tela)
             if screen:
                 cls._telas[nome_tela] = screen
@@ -107,7 +105,6 @@ class ScreenManager:
             
             # Se estiver usando ViewRenderer Hub, notifica
             if cls._usar_view_hub:
-                from View.ViewRenderer import ViewRenderer
                 ViewRenderer.set_current_screen(nome_tela)
         else:
             print(f"[ScreenManager] ERRO: Screen '{nome_tela}' não encontrada")
@@ -122,7 +119,6 @@ class ScreenManager:
         Processa eventos através do InputHandler Hub.
         O InputHandler já captura pygame.event.get() e distribui para handlers registrados.
         """
-        from View.InputHandler import InputHandler
         
         continuar = InputHandler.processar_eventos(screen_name=cls._tela_atual_nome)
         
@@ -170,7 +166,6 @@ class ScreenManager:
         Quando habilitado, usa ViewRenderer para gerenciar screens.
         """
         cls._usar_view_hub = True
-        from View.ViewRenderer import ViewRenderer
         ViewRenderer.inicializar()
         print("[ScreenManager] ViewRenderer Hub habilitado")
     

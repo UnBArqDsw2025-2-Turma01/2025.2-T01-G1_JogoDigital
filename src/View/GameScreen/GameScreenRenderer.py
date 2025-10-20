@@ -4,10 +4,11 @@ from Model.Items.guarana import Guarana
 from Template.PhysicsEngine import PhysicsEngine
 from Template.TemplateRenderer import TemplateRenderer
 from View.UIRenderer import UIRenderer
-from Template.UIConfigs import GRID_OFFSET_X, GRID_OFFSET_Y, NUM_LINHAS, NUM_COLUNAS, TAMANHO_QUADRADO
+from Template.UIConfigs import GRID_OFFSET_X, GRID_OFFSET_Y, NUM_LINHAS, NUM_COLUNAS, TAMANHO_QUADRADO, LARGURA_TELA_JANELA
 from Core.ScreenManager import ScreenManager
 from Model.Level import Level
 from View.Modal.PauseModal import PauseModal
+from Asset.AssetProvider import AssetProvider
 import random
 
 
@@ -24,6 +25,7 @@ class GameScreenRenderer:
         self._tempo_proximo_spawn = 0
         # Contador de moedas coletadas (temporário, pode ser movido para player)
         self.coins = 0
+        self.score_board = AssetProvider.get('scoreboard')
 
     def handle_event(self, event):
         if event.type == pygame.QUIT:
@@ -109,6 +111,10 @@ class GameScreenRenderer:
         projeteis_grupo.draw(surface)
         caiporas_grupo.draw(surface)
         inimigos_grupo.draw(surface)
+
+        # scoreboard
+        score_board_pos_x = LARGURA_TELA_JANELA //2- self.score_board.get_width() //2
+        surface.blit(self.score_board, (score_board_pos_x, 0))
 
         # UI (botões)
         cor_add = (0, 200, 0) if self.state_vars['MODO_COLOCACAO_ATIVO'] else (100, 100, 100)
