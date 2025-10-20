@@ -1,6 +1,7 @@
 import pygame
 import os
 from Template.UIConfigs import *
+
 class AssetProvider:
     ASSETS = {}
     
@@ -9,6 +10,9 @@ class AssetProvider:
         """Carrega e escala todos os assets do jogo."""
         base_dir = os.path.dirname(os.path.abspath(__file__))
         try:
+            # FONTE
+            cls.ASSETS['font_press_start_2P'] = pygame.font.Font(os.path.join(base_dir, 'font', 'PressStart2P-Regular.ttf'), 24)
+
             # MAP TILES
             cls.ASSETS['grass_claro'] = pygame.transform.scale(
                 pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'titleset', 'grass1.png')).convert_alpha(),
@@ -19,6 +23,17 @@ class AssetProvider:
                 (TAMANHO_QUADRADO, TAMANHO_QUADRADO)
             )
 
+            #SCOREBOARD
+            cls.ASSETS['scoreboard'] = pygame.transform.scale(
+                pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'map_scoreboard1.png')).convert_alpha(),
+                (TAMANHO_QUADRADO*5, TAMANHO_QUADRADO*1.5)
+            )
+
+            cls.ASSETS['scoreboard_slot'] = pygame.transform.scale(
+                pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'player_block01.png')).convert_alpha(),
+                (TAMANHO_QUADRADO/1.8, TAMANHO_QUADRADO/1.6)
+            )
+
             # CAIPORA
             cls.ASSETS['caipora_attack'] = [
                 pygame.transform.scale(
@@ -27,9 +42,10 @@ class AssetProvider:
                 )
                 for i in range(1, 3)
             ]
+
             cls.ASSETS['caipora_projectile'] = pygame.transform.scale(
                 pygame.image.load(os.path.join(base_dir, 'characters', 'defense', 'caipora', 'caipora_arrow.png')).convert_alpha(),
-                (30, 30)
+                (50, 20)
             )
 
             # BICHO PAPÃO
@@ -84,7 +100,132 @@ class AssetProvider:
                     pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_tutorial_click.png')).convert_alpha(),
                     (200, 60)
                 ),
+
+                # Botão Sair da Partida
+                'btn_sair': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_sair_partida.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_sair_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'botao_sair_partida_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+
+                # Icone Som Normal
+                'icon_som': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'icone_som_normal.png')).convert_alpha(),
+                    (40, 40)
+                ),
+                'icon_som_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'icone_som_click.png')).convert_alpha(),
+                    (40, 40)
+                ),
+
+                # Icone Som Mudo
+                'icon_mute': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'icone_som_mute.png')).convert_alpha(),
+                    (40, 40)
+                ),
+
+                # Barra de volume
+                'barra_volume_mute': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_0.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_mute_houver': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_0_click.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_25': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_25.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_25_houver': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_25_click.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_50': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_50.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_50_houver': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_50_click.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_75': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_75.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_75_houver': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_75_click.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_100': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_100.png')).convert_alpha(),
+                    (150, 20)
+                ),
+                'barra_volume_100_houver': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_pause', 'barra_100_click.png')).convert_alpha(),
+                    (150, 20)
+                ),
+
+                # MENU CONFIGURAÇÕES
+                'menu_config': pygame.image.load(
+                    os.path.join(base_dir, 'menu_config', 'menu_config.png')
+                ).convert_alpha(),
+                'btn_voltar': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_voltar.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_voltar_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_voltar_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_salvar': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_salvar.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                'btn_salvar_hover': pygame.transform.scale(
+                    pygame.image.load(os.path.join(base_dir, 'menu_config', 'botao_salvar_click.png')).convert_alpha(),
+                    (200, 60)
+                ),
+                
+                # MENU PRINCIPAL
+                'menu_principal': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen.png')
+                ).convert_alpha(),
+                
+                # Botões do Menu Principal
+                'menu_btn_jogar': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button3.png')
+                ).convert_alpha(),
+                'menu_btn_jogar_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click1.png')
+                ).convert_alpha(),
+                
+                'menu_btn_loja': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button2.png')
+                ).convert_alpha(),
+                'menu_btn_loja_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click2.png')
+                ).convert_alpha(),
+                
+                'menu_btn_creditos': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button1.png')
+                ).convert_alpha(),
+                'menu_btn_creditos_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click3.png')
+                ).convert_alpha(),
+
+                'menu_btn_config': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'botao_config.png')
+                ).convert_alpha(),
+                'menu_btn_config_hover': pygame.image.load(
+                    os.path.join(base_dir, 'menu', 'menu_screen', 'botao_config_click.png')
+                ).convert_alpha(),
                 })
+            
+
 
             print("Assets carregados com sucesso.")
 

@@ -4,10 +4,11 @@ from Model.Items.guarana import Guarana
 from Template.PhysicsEngine import PhysicsEngine
 from Template.TemplateRenderer import TemplateRenderer
 from View.UIRenderer import UIRenderer
-from Template.UIConfigs import GRID_OFFSET_X, GRID_OFFSET_Y, NUM_LINHAS, NUM_COLUNAS, TAMANHO_QUADRADO
+from Template.UIConfigs import *
 from Core.ScreenManager import ScreenManager
 from Model.Level import Level
 from View.Modal.PauseModal import PauseModal
+from Asset.AssetProvider import AssetProvider
 import random
 
 
@@ -19,22 +20,24 @@ class GameScreenRenderer:
         self.state_vars = screen.state_vars
         self.add_rect = screen.add_rect
         self.pause_rect = screen.pause_rect
-        self.back_rect = screen.back_rect
+        self.coins_rect = screen.coins_rect
         self.font = screen.font
         # Tempo para o próximo spawn (ms)
         self._tempo_proximo_spawn = 0
         # Contador de moedas coletadas (temporário, pode ser movido para player)
         self.coins = 0
+        self.score_board = AssetProvider.get('scoreboard')
+        self.score_board_slot = AssetProvider.get('scoreboard_slot')
+        self.font_scoreboard = AssetProvider.get('font_press_start_2P')
+        self.caipora_icon = AssetProvider.get('caipora_icon')
 
     def handle_event(self, event):
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
+        
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
-                self.state_vars['GAME_PAUSED'] = not self.state_vars['GAME_PAUSED']
-            elif event.key == pygame.K_m:
+            if event.key == pygame.K_m:
                 ScreenManager.set_tela("menu")
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -51,10 +54,6 @@ class GameScreenRenderer:
             # Botão PAUSE
             elif self.pause_rect.collidepoint(x, y):
                 self.state_vars['GAME_PAUSED'] = not self.state_vars['GAME_PAUSED']
-            
-            # Botão VOLTAR
-            elif self.back_rect.collidepoint(x, y):
-                ScreenManager.set_tela("level_select")
 
             # Grid para colocar Caipora
             elif self.state_vars['MODO_COLOCACAO_ATIVO']:
@@ -117,17 +116,26 @@ class GameScreenRenderer:
         caiporas_grupo.draw(surface)
         inimigos_grupo.draw(surface)
 
+        # scoreboard
+        scoreboard_pos_x = LARGURA_TELA_JANELA //2- self.score_board.get_width() //2
+        surface.blit(self.score_board, (scoreboard_pos_x, 0))
+        coins_text = self.font_scoreboard.render(f"{self.coins:03d}", True, (241, 245, 48))
+        surface.blit(coins_text, (scoreboard_pos_x + TAMANHO_QUADRADO-45, (TAMANHO_QUADRADO*1.3)//2))
+
+        sb_slot_pos_x_init = scoreboard_pos_x + TAMANHO_QUADRADO*1.5
+        slot_gap = 10
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+ TAMANHO_QUADRADO/2 + slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+TAMANHO_QUADRADO + 2*slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+TAMANHO_QUADRADO*1.5 + 3*slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+TAMANHO_QUADRADO*2 + 4*slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        
+
         # UI (botões)
         cor_add = (0, 200, 0) if self.state_vars['MODO_COLOCACAO_ATIVO'] else (100, 100, 100)
         cor_pause = (200, 0, 0) if self.state_vars['GAME_PAUSED'] else (50, 50, 50)
-        cor_back = (70, 70, 150)
         UIRenderer.desenhar_botao(surface, self.add_rect, cor_add, "ADICIONAR", self.font)
         UIRenderer.desenhar_botao(surface, self.pause_rect, cor_pause, "PAUSE", self.font)
-        UIRenderer.desenhar_botao(surface, self.back_rect, cor_back, "VOLTAR", self.font)
-        
-        if self.screen.current_level:
-            level_name = self.font.render(self.screen.current_level.name, True, (255, 255, 255))
-            surface.blit(level_name, (surface.get_width() - level_name.get_width() - 20, 70))
 
         # Desenha guaranás por cima de tudo
         guaranas_grupo.draw(surface)
