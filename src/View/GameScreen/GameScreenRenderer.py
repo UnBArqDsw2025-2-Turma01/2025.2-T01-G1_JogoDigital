@@ -4,7 +4,7 @@ from Model.Items.guarana import Guarana
 from Template.PhysicsEngine import PhysicsEngine
 from Template.TemplateRenderer import TemplateRenderer
 from View.UIRenderer import UIRenderer
-from Template.UIConfigs import GRID_OFFSET_X, GRID_OFFSET_Y, NUM_LINHAS, NUM_COLUNAS, TAMANHO_QUADRADO, LARGURA_TELA_JANELA
+from Template.UIConfigs import *
 from Core.ScreenManager import ScreenManager
 from Model.Level import Level
 from View.Modal.PauseModal import PauseModal
@@ -20,12 +20,16 @@ class GameScreenRenderer:
         self.state_vars = screen.state_vars
         self.add_rect = screen.add_rect
         self.pause_rect = screen.pause_rect
+        self.coins_rect = screen.coins_rect
         self.font = screen.font
         # Tempo para o próximo spawn (ms)
         self._tempo_proximo_spawn = 0
         # Contador de moedas coletadas (temporário, pode ser movido para player)
         self.coins = 0
         self.score_board = AssetProvider.get('scoreboard')
+        self.score_board_slot = AssetProvider.get('scoreboard_slot')
+        self.font_scoreboard = AssetProvider.get('font_press_start_2P')
+        self.caipora_icon = AssetProvider.get('caipora_icon')
 
     def handle_event(self, event):
         if event.type == pygame.QUIT:
@@ -113,8 +117,19 @@ class GameScreenRenderer:
         inimigos_grupo.draw(surface)
 
         # scoreboard
-        score_board_pos_x = LARGURA_TELA_JANELA //2- self.score_board.get_width() //2
-        surface.blit(self.score_board, (score_board_pos_x, 0))
+        scoreboard_pos_x = LARGURA_TELA_JANELA //2- self.score_board.get_width() //2
+        surface.blit(self.score_board, (scoreboard_pos_x, 0))
+        coins_text = self.font_scoreboard.render(f"{self.coins:03d}", True, (241, 245, 48))
+        surface.blit(coins_text, (scoreboard_pos_x + TAMANHO_QUADRADO-45, (TAMANHO_QUADRADO*1.3)//2))
+
+        sb_slot_pos_x_init = scoreboard_pos_x + TAMANHO_QUADRADO*1.5
+        slot_gap = 10
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+ TAMANHO_QUADRADO/2 + slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+TAMANHO_QUADRADO + 2*slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+TAMANHO_QUADRADO*1.5 + 3*slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        surface.blit(self.score_board_slot, (sb_slot_pos_x_init+TAMANHO_QUADRADO*2 + 4*slot_gap, (TAMANHO_QUADRADO-slot_gap)/2))
+        
 
         # UI (botões)
         cor_add = (0, 200, 0) if self.state_vars['MODO_COLOCACAO_ATIVO'] else (100, 100, 100)

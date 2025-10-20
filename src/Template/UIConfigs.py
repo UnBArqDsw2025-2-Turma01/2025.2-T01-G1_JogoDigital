@@ -18,7 +18,7 @@ TAMANHO_BP = 130 # Bicho Papão maior
 # Dimensões calculadas da tela (para o ScreenManager)
 LARGURA_TELA = NUM_COLUNAS * TAMANHO_QUADRADO + (2 * GRID_OFFSET_X)
 ALTURA_TELA = NUM_LINHAS * TAMANHO_QUADRADO + (2 * GRID_OFFSET_Y)
-TITULO_JOGO = "Folclore Game - Modularizado"
+TITULO_JOGO = "Lenda VS Exploradores"
 
 # --- CONFIGURAÇÕES DE UI E CORES ---
 PRETO = (0, 0, 0)

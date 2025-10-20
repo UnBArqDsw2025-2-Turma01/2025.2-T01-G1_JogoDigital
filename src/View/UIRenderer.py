@@ -1,5 +1,3 @@
-# View/UIRenderer.py
-
 import pygame
 
 class UIRenderer:

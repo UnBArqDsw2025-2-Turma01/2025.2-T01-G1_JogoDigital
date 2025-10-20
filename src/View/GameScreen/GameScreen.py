@@ -18,6 +18,7 @@ class GameScreen(BaseScreen):
         # Botões específicos desta tela
         self.add_rect = pygame.Rect(50, 20, 120, 40)
         self.pause_rect = pygame.Rect(200, 20, 120, 40)
+        self.coins_rect = pygame.Rect(350, 20, 120, 40)
 
         # Fonte
         self.font = pygame.font.SysFont(None, 24)

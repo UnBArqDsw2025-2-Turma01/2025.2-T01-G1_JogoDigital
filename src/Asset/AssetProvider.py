@@ -1,6 +1,7 @@
 import pygame
 import os
 from Template.UIConfigs import *
+
 class AssetProvider:
     ASSETS = {}
     
@@ -9,6 +10,9 @@ class AssetProvider:
         """Carrega e escala todos os assets do jogo."""
         base_dir = os.path.dirname(os.path.abspath(__file__))
         try:
+            # FONTE
+            cls.ASSETS['font_press_start_2P'] = pygame.font.Font(os.path.join(base_dir, 'font', 'PressStart2P-Regular.ttf'), 24)
+
             # MAP TILES
             cls.ASSETS['grass_claro'] = pygame.transform.scale(
                 pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'titleset', 'grass1.png')).convert_alpha(),
@@ -19,8 +23,16 @@ class AssetProvider:
                 (TAMANHO_QUADRADO, TAMANHO_QUADRADO)
             )
 
-            cls.ASSETS['scoreboard'] = pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'map_scoreboard.png')).convert_alpha()
-            
+            #SCOREBOARD
+            cls.ASSETS['scoreboard'] = pygame.transform.scale(
+                pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'map_scoreboard1.png')).convert_alpha(),
+                (TAMANHO_QUADRADO*5, TAMANHO_QUADRADO*1.5)
+            )
+
+            cls.ASSETS['scoreboard_slot'] = pygame.transform.scale(
+                pygame.image.load(os.path.join(base_dir, 'maps', 'map1', 'object', 'player_block01.png')).convert_alpha(),
+                (TAMANHO_QUADRADO/1.8, TAMANHO_QUADRADO/1.6)
+            )
 
             # CAIPORA
             cls.ASSETS['caipora_attack'] = [
@@ -30,9 +42,10 @@ class AssetProvider:
                 )
                 for i in range(1, 3)
             ]
+
             cls.ASSETS['caipora_projectile'] = pygame.transform.scale(
                 pygame.image.load(os.path.join(base_dir, 'characters', 'defense', 'caipora', 'caipora_arrow.png')).convert_alpha(),
-                (30, 30)
+                (50, 20)
             )
 
             # BICHO PAPÃO
@@ -183,6 +196,8 @@ class AssetProvider:
                     os.path.join(base_dir, 'menu', 'menu_screen', 'main_screen_button_click3.png')
                 ).convert_alpha(),
                 })
+            
+
 
             print("Assets carregados com sucesso.")
 
