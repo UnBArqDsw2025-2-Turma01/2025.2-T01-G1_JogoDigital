@@ -48,7 +48,6 @@ class GameScreen(BaseScreen):
             # Botão PAUSE
             if self.pause_rect.collidepoint(x, y):
                 ScreenManager.push_modal(PauseModal())
-                self.state_vars['GAME_PAUSED'] = True
 
             # Botão ADICIONAR
             elif self.add_rect.collidepoint(x, y):
@@ -92,6 +91,7 @@ class GameScreen(BaseScreen):
         Level.inicializar_mapa()
 
     def update(self):
+        self.state_vars['GAME_PAUSED'] = bool(ScreenManager._modals)
         self.renderer.update()
 
     def draw(self, surface):

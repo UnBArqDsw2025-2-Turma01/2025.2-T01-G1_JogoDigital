@@ -74,7 +74,6 @@ class LevelSelectScreen(BaseScreen):
         print(f"Iniciando {level.name}...")
         from View.ViewRenderer import ViewRenderer
         
-        # Obtém a GameScreen através do ViewRenderer
         ViewRenderer.transition_to("jogo")
         game_screen = ViewRenderer.get_current_screen()
         if game_screen and hasattr(game_screen, 'set_current_level'):
