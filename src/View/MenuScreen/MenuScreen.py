@@ -22,7 +22,7 @@ class MenuScreen(BaseScreen):
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 from View.ViewRenderer import ViewRenderer
-                ViewRenderer.transition_to("jogo")
+                ViewRenderer.transition_to("level_select")
         elif event.type == pygame.MOUSEMOTION:
             x, y = event.pos
             self.hover_states[0] = self.start_rect.collidepoint(x, y)
@@ -33,7 +33,7 @@ class MenuScreen(BaseScreen):
             x, y = event.pos
             if self.start_rect.collidepoint(x, y):
                 from View.ViewRenderer import ViewRenderer
-                ViewRenderer.transition_to("jogo")
+                ViewRenderer.transition_to("level_select")
             elif self.shop_rect.collidepoint(x, y):
                 print("Abrir loja")
             elif self.credits_rect.collidepoint(x, y):

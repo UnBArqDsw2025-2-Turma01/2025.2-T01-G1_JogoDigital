@@ -1,6 +1,5 @@
 import pygame
 from Template.BaseScreen import BaseScreen
-from Core.ScreenManager import ScreenManager
 from View.LevelSelectScreen.LevelSelectScreenRenderer import LevelSelectScreenRenderer
 from Model.Level import Level, LevelStatus
 
@@ -49,13 +48,15 @@ class LevelSelectScreen(BaseScreen):
         
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                ScreenManager.set_tela("menu")
+                from View.ViewRenderer import ViewRenderer
+                ViewRenderer.transition_to("menu")
         
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             
             if self.back_rect.collidepoint(x, y):
-                ScreenManager.set_tela("menu")
+                from View.ViewRenderer import ViewRenderer
+                ViewRenderer.transition_to("menu")
             
             elif self.play_rect.collidepoint(x, y) and self.selected_level:
                 self._iniciar_nivel(self.selected_level)
@@ -71,11 +72,13 @@ class LevelSelectScreen(BaseScreen):
     
     def _iniciar_nivel(self, level):
         print(f"Iniciando {level.name}...")
-        game_screen = ScreenManager._telas.get("jogo")
-        if game_screen:
-            game_screen.current_level = level
-            game_screen.reiniciar_jogo()
-        ScreenManager.set_tela("jogo")
+        from View.ViewRenderer import ViewRenderer
+        
+        # Obtém a GameScreen através do ViewRenderer
+        ViewRenderer.transition_to("jogo")
+        game_screen = ViewRenderer.get_current_screen()
+        if game_screen and hasattr(game_screen, 'set_current_level'):
+            game_screen.set_current_level(level)
     
     def update(self):
         pass

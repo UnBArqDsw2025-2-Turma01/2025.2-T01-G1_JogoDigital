@@ -12,6 +12,8 @@ class GameScreen(BaseScreen):
 
         Level.inicializar_mapa()
 
+        self.current_level = None
+
         # Estado da tela
         self.state_vars = {
             'MODO_COLOCACAO_ATIVO': False,
@@ -38,7 +40,7 @@ class GameScreen(BaseScreen):
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_m:
                 from View.ViewRenderer import ViewRenderer
-                ViewRenderer.transition_to("menu")
+                ViewRenderer.transition_to("level_select")
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
@@ -83,6 +85,11 @@ class GameScreen(BaseScreen):
                 self.renderer.coins += guarana.value
                 print(f"Guaraná coletado! Coins: {self.renderer.coins}")
                 break
+
+    def set_current_level(self, level):
+        self.current_level = level
+        print(f"Nível configurado: {level.name}")
+        Level.inicializar_mapa()
 
     def update(self):
         self.renderer.update()

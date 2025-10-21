@@ -214,6 +214,11 @@ class InputHandler:
                         ScreenManager.push_modal(PauseModal())
                     return True
                 
+                elif tela_atual == "level_select":
+                    print("[InputHandler] ESC - Voltando ao menu")
+                    ViewRenderer.transition_to("menu")
+                    return True
+                
             return False
         
         cls.add_global_handler("esc", handler_esc)
