@@ -26,7 +26,7 @@ class BichoPapao(Enemy):
 
         # Atributos de combate e habilidade
         self.health = 400
-        self.speed = 1.2
+        self.speed = 6
         self.damage = 30
         
         self.scare_range = 100
@@ -35,15 +35,17 @@ class BichoPapao(Enemy):
         self.last_scare_time = -self.scare_cooldown 
     
     def update(self):
-        # Atualiza a animação
-        self.current_frame = (self.current_frame + self.animation_speed) % len(self.walk_animation)
-        self.image = self.walk_animation[int(self.current_frame)]
-
-        # Chama a lógica de update da classe pai (movimento, etc.)
+        """
+        Atualização delegada para o estado atual.
+        O State Pattern cuida da animação e movimento.
+        """
         super().update()
 
     def attack(self, defense):
-        """Ataca a defesa, priorizando a habilidade de susto se estiver disponível."""
+        """
+        Ataque especializado do Bicho-Papão.
+        Prioriza habilidade de susto, depois ataque padrão.
+        """
         now = pygame.time.get_ticks()
         
         # Verifica se pode usar a habilidade de susto
@@ -52,13 +54,15 @@ class BichoPapao(Enemy):
             scare_area.x -= self.scare_range
             
             if scare_area.colliderect(defense.rect):
-                self.scare(defense)
+                self._scare_defense(defense)
                 self.last_scare_time = now
                 return
         
         # Ataque padrão: aplica dano à defesa
         defense.health -= self.damage * 0.1
-        
-    def scare(self, defense):
+    
+    def _scare_defense(self, defense):
+        """Assusta uma defesa se ela tiver o método get_scared."""
         if hasattr(defense, 'get_scared'):
             defense.get_scared(self.scare_duration)
+            print(f"[BichoPapao] Assustou {defense.__class__.__name__}!")
