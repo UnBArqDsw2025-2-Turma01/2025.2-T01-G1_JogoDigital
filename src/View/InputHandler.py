@@ -1,6 +1,15 @@
 import pygame
-from typing import Optional, Callable, Dict, List
+from typing import Optional, Callable, Dict, List, Protocol
 from enum import Enum
+
+class InputHandler(Protocol):
+    """Interface que handlers de input devem implementar."""
+    def handle_input(self, event: pygame.event.Event) -> bool:
+        """
+        Processa um evento de input.
+        Retorna True se consumiu o evento, False caso contrário.
+        """
+        ...
 
 class InputType(Enum):
     """Tipos de input suportados."""
@@ -11,48 +20,37 @@ class InputType(Enum):
 
 class InputHandler:
     """
-    Hub/Facade centralizado para todos os inputs.
-    
     Responsabilidades:
-    - Capturar eventos do Pygame
-    - Classificar e filtrar eventos
-    - Distribuir eventos para handlers registrados
+    - Esconder a complexidade de captura e distribuição de eventos
     - Gerenciar atalhos globais
-    - Fornecer interface unificada para input
+    - Fornecer interface simples para processamento de inputs
     """
+
+    _global_handlers: Dict[str, Callable] = {}
+    _input_enabled = True
+    _current_screen_name: Optional[str] = None
+
+    _keys_pressed: Dict[int, bool] = {}
+    _mouse_pos: tuple = (0, 0)
+    _mouse_buttons: Dict[int, bool] = {}
     
-    # === ESTADO GLOBAL ===
-    _global_handlers: Dict[str, Callable] = {}  # Handlers globais (ex: ESC, F11)
-    _screen_handlers: Dict[str, Callable] = {}  # Handlers por screen
-    _event_filters: List[Callable] = []  # Filtros customizados
-    _input_enabled = True  # Flag para pausar inputs
-    
-    # === ESTADO DE INPUT (para consultas) ===
-    _keys_pressed: Dict[int, bool] = {}  # Teclas pressionadas
-    _mouse_pos: tuple = (0, 0)  # Posição do mouse
-    _mouse_buttons: Dict[int, bool] = {}  # Botões do mouse
-    
-    # === ESTATÍSTICAS ===
     _events_processed = 0
     _events_filtered = 0
-    
-    # === INICIALIZAÇÃO ===
+
     @classmethod
     def inicializar(cls):
-        """Inicializa o Hub de Input."""
+        """Inicializa o Facade de Input."""
         cls._global_handlers.clear()
-        cls._screen_handlers.clear()
-        cls._event_filters.clear()
         cls._keys_pressed.clear()
         cls._mouse_buttons.clear()
         cls._input_enabled = True
-        print("[InputHandler] Hub de Input inicializado")
-    
-    # === REGISTRO DE HANDLERS ===
+        cls._current_screen_name = None
+        print("[InputHandler] Facade de Input inicializado")
+
     @classmethod
-    def registrar_handler_global(cls, nome: str, handler: Callable):
+    def add_global_handler(cls, nome: str, handler: Callable):
         """
-        Registra um handler global (processado antes de screen handlers).
+        Adiciona um handler global ao facade.
         
         Args:
             nome: Identificador único do handler
@@ -62,101 +60,60 @@ class InputHandler:
         print(f"[InputHandler] Handler global '{nome}' registrado")
     
     @classmethod
-    def registrar_handler_screen(cls, screen_name: str, handler: Callable):
-        """
-        Registra um handler para uma screen específica.
-        
-        Args:
-            screen_name: Nome da screen ('menu', 'jogo', etc.)
-            handler: Função que recebe (event) e retorna bool
-        """
-        cls._screen_handlers[screen_name] = handler
-        print(f"[InputHandler] Handler de screen '{screen_name}' registrado")
-    
-    @classmethod
-    def remover_handler_global(cls, nome: str):
+    def remove_global_handler(cls, nome: str):
         """Remove um handler global."""
         if nome in cls._global_handlers:
             del cls._global_handlers[nome]
             print(f"[InputHandler] Handler global '{nome}' removido")
-    
+
     @classmethod
-    def registrar_filtro(cls, filtro: Callable):
+    def process_events(cls) -> bool:
         """
-        Registra um filtro de eventos.
-        Filtro recebe (event) e retorna bool (True = processar, False = ignorar)
-        """
-        cls._event_filters.append(filtro)
-    
-    # === PROCESSAMENTO DE EVENTOS ===
-    @classmethod
-    def processar_eventos(cls, screen_name: Optional[str] = None) -> bool:
-        """
-        Processa todos os eventos da fila do Pygame.
+        Interface simplificada para processar todos os eventos.
+        Esconde a complexidade de captura e distribuição de eventos.
         
-        Args:
-            screen_name: Nome da screen atual (para handlers específicos)
-            
         Returns:
             bool: False se recebeu evento QUIT, True caso contrário
         """
         if not cls._input_enabled:
-            pygame.event.clear()  # Limpa fila se input desabilitado
+            pygame.event.clear()
             return True
         
         for event in pygame.event.get():
             cls._events_processed += 1
             
-            # Atualiza estado interno
             cls._atualizar_estado(event)
-            
-            # Aplica filtros
-            if not cls._aplicar_filtros(event):
-                cls._events_filtered += 1
-                continue
-            
-            # Verifica QUIT
+
             if event.type == pygame.QUIT:
                 return False
-            
-            # Processa handlers globais (prioridade)
+
             if cls._processar_handlers_globais(event):
-                continue  # Evento consumido
-            
-            # Processa handler da screen atual
-            if screen_name and screen_name in cls._screen_handlers:
-                cls._screen_handlers[screen_name](event)
+                continue
+
+            cls._distribuir_evento(event)
         
         return True
     
     @classmethod
-    def processar_evento_unico(cls, event: pygame.event.Event, screen_name: Optional[str] = None):
+    def _distribuir_evento(cls, event: pygame.event.Event):
         """
-        Processa um único evento (útil para testes ou processamento customizado).
-        
-        Args:
-            event: Evento do Pygame
-            screen_name: Nome da screen atual
+        Distribui evento para modais ou screen atual.
+        Esconde a complexidade de priorização (modais > screen).
         """
-        if not cls._input_enabled:
+        from Core.ScreenManager import ScreenManager
+        from View.ViewRenderer import ViewRenderer
+
+        if ScreenManager._modals:
+            top_modal = ScreenManager._modals[-1]
+            result = top_modal.handle_event(event)
+            if result == 'close':
+                ScreenManager.pop_modal()
             return
-        
-        cls._events_processed += 1
-        cls._atualizar_estado(event)
-        
-        if not cls._aplicar_filtros(event):
-            cls._events_filtered += 1
-            return
-        
-        # Handlers globais primeiro
-        if cls._processar_handlers_globais(event):
-            return
-        
-        # Handler da screen
-        if screen_name and screen_name in cls._screen_handlers:
-            cls._screen_handlers[screen_name](event)
-    
-    # === MÉTODOS INTERNOS ===
+
+        current_screen = ViewRenderer.get_current_screen()
+        if current_screen:
+            current_screen.handle_event(event)
+
     @classmethod
     def _atualizar_estado(cls, event: pygame.event.Event):
         """Atualiza estado interno baseado no evento."""
@@ -172,14 +129,6 @@ class InputHandler:
             cls._mouse_buttons[event.button] = False
     
     @classmethod
-    def _aplicar_filtros(cls, event: pygame.event.Event) -> bool:
-        """Aplica filtros registrados. Retorna True se evento deve ser processado."""
-        for filtro in cls._event_filters:
-            if not filtro(event):
-                return False
-        return True
-    
-    @classmethod
     def _processar_handlers_globais(cls, event: pygame.event.Event) -> bool:
         """
         Processa handlers globais.
@@ -188,12 +137,11 @@ class InputHandler:
         for nome, handler in cls._global_handlers.items():
             try:
                 if handler(event):
-                    return True  # Evento consumido
+                    return True
             except Exception as e:
                 print(f"[InputHandler] ERRO no handler global '{nome}': {e}")
         return False
-    
-    # === CONSULTAS DE ESTADO ===
+
     @classmethod
     def tecla_pressionada(cls, key: int) -> bool:
         """Verifica se uma tecla está pressionada."""
@@ -218,67 +166,58 @@ class InputHandler:
     def mouse_botao_pressionado(cls, button: int = 1) -> bool:
         """Verifica se botão do mouse está pressionado (1=esquerdo, 2=meio, 3=direito)."""
         return cls._mouse_buttons.get(button, False)
-    
-    # === CONTROLE DE ESTADO ===
+
     @classmethod
-    def habilitar_input(cls):
+    def enable(cls):
         """Habilita processamento de inputs."""
         cls._input_enabled = True
         print("[InputHandler] Input habilitado")
     
     @classmethod
-    def desabilitar_input(cls):
+    def disable(cls):
         """Desabilita processamento de inputs (útil para cutscenes, etc.)."""
         cls._input_enabled = False
         print("[InputHandler] Input desabilitado")
     
     @classmethod
-    def esta_habilitado(cls) -> bool:
+    def is_enabled(cls) -> bool:
         """Verifica se input está habilitado."""
         return cls._input_enabled
-    
-    # === ATALHOS GLOBAIS PRÉ-DEFINIDOS ===
+
     @classmethod
-    def registrar_atalhos_padrao(cls):
+    def setup_default_shortcuts(cls):
         """
-        Registra atalhos globais padrão do projeto.
-        
-        ESC - Comportamento dependente da tela:
-        - Menu Principal: Fecha o jogo (pygame.quit)
-        - GameScreen: Abre/Fecha PauseModal
+        Configura atalhos globais padrão do projeto.
+        Esconde a complexidade de registro de handlers.
         """
         
         def handler_esc(event):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 from Core.ScreenManager import ScreenManager
                 from View.Modal.PauseModal import PauseModal
+                from View.ViewRenderer import ViewRenderer
                 
-                tela_atual = ScreenManager._tela_atual_nome
+                tela_atual = ViewRenderer.get_current_screen_name()
                 
-                # Menu Principal - Fecha o jogo
                 if tela_atual == "menu":
-                    print("[InputHandler] ESC no menu - Fechando jogo")
+                    print("[InputHandler] ESC - Fechando jogo")
                     pygame.quit()
                     exit()
-                    return True  # Consome evento
+                    return True
                 
-                # GameScreen - Abre/Fecha PauseModal
                 elif tela_atual == "jogo":
                     if ScreenManager._modals:
-                        # Se há modal aberto, fecha ele
                         print("[InputHandler] ESC - Fechando modal")
                         ScreenManager.pop_modal()
                     else:
-                        # Se não há modal, abre PauseModal
                         print("[InputHandler] ESC - Abrindo PauseModal")
                         ScreenManager.push_modal(PauseModal())
-                    return True  # Consome evento
+                    return True
                 
             return False
         
-        cls.registrar_handler_global("esc", handler_esc)
-    
-    # === UTILITÁRIOS ===
+        cls.add_global_handler("esc", handler_esc)
+
     @classmethod
     def classificar_evento(cls, event: pygame.event.Event) -> InputType:
         """Classifica tipo do evento."""
@@ -292,24 +231,13 @@ class InputHandler:
             return InputType.JOYSTICK
         return None
     
-    # === DEBUG/MÉTRICAS ===
     @classmethod
     def debug_info(cls) -> dict:
-        """Retorna informações de debug sobre o estado do Hub."""
+        """Retorna informações de debug."""
         return {
             'input_habilitado': cls._input_enabled,
             'handlers_globais': list(cls._global_handlers.keys()),
-            'handlers_screens': list(cls._screen_handlers.keys()),
-            'filtros_ativos': len(cls._event_filters),
             'eventos_processados': cls._events_processed,
-            'eventos_filtrados': cls._events_filtered,
             'teclas_pressionadas': len([k for k, v in cls._keys_pressed.items() if v]),
             'mouse_pos': cls._mouse_pos,
         }
-    
-    @classmethod
-    def resetar_estatisticas(cls):
-        """Reseta contadores de estatísticas."""
-        cls._events_processed = 0
-        cls._events_filtered = 0
-        print("[InputHandler] Estatísticas resetadas")

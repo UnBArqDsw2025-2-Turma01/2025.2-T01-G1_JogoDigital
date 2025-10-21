@@ -4,14 +4,28 @@ from Core.ScreenManager import ScreenManager
 class BaseScreen:
     """
     Classe base para telas.
-    Fornece interface padrão + hooks opcionais de ciclo de vida.
+    Implementa a interface IScreen para o padrão Facade.
     """
 
     def __init__(self):
-        # tela e relógio do jogo, se quiser usar
         self.surface = ScreenManager.get_tela()
         self.relogio = ScreenManager.get_relogio()
         self.assets = None
+        self._is_open = False
+
+    def open_screen(self):
+        """Chamado quando a screen é aberta (Facade Pattern)."""
+        self._is_open = True
+        self.on_enter()
+    
+    def close_screen(self):
+        """Chamado quando a screen é fechada (Facade Pattern)."""
+        self._is_open = False
+        self.on_exit()
+    
+    def is_open(self) -> bool:
+        """Retorna se a screen está aberta."""
+        return self._is_open
 
     def handle_event(self, event: pygame.event.Event):
         """Trata eventos da tela."""
@@ -32,13 +46,3 @@ class BaseScreen:
     def on_exit(self):
         """Chamado quando a tela deixa de estar ativa."""
         pass
-
-    @classmethod
-    def set_tela(cls, nome_tela):
-        """Troca a tela atual."""
-        if nome_tela in cls._telas:
-            if cls._tela_atual:
-                cls._tela_atual.on_exit()
-
-            cls._tela_atual = cls._telas[nome_tela]
-            cls._tela_atual.on_enter()
