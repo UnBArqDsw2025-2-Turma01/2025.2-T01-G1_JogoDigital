@@ -1,4 +1,5 @@
 import pygame
+import random
 from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo, guaranas_grupo
 from Model.Items.guarana import Guarana
 from Template.PhysicsEngine import PhysicsEngine
@@ -9,13 +10,22 @@ from Core.ScreenManager import ScreenManager
 from Model.Level import Level
 from View.Modal.PauseModal import PauseModal
 from Asset.AssetProvider import AssetProvider
-import random
+from Model.interfaces import IIterableCollection
+from Model.Defense.caipora import Caipora
+from Model.Enemies.enemy import Enemy
+from Model.Items.arrow import Arrow
 
 
 class GameScreenRenderer:
     """Renderer específico da GameScreen, cuidando de mapa, entidades e UI."""
 
-    def __init__(self, screen):
+    def __init__(self, 
+                 screen,
+                 # Armazena os iteráveis recebidos
+                 iterable_caiporas: IIterableCollection[Caipora], 
+                 iterable_inimigos: IIterableCollection[Enemy], 
+                 iterable_projeteis: IIterableCollection[Arrow]):
+        
         self.screen = screen
         self.state_vars = screen.state_vars
         self.add_rect = screen.add_rect
@@ -28,10 +38,22 @@ class GameScreenRenderer:
         self.score_board_slot = AssetProvider.get('scoreboard_slot')
         self.font_scoreboard = AssetProvider.get('font_press_start_2P')
         self.caipora_icon = AssetProvider.get('caipora_icon')
+        
+        self.iterable_caiporas = iterable_caiporas
+        self.iterable_inimigos = iterable_inimigos
+        self.iterable_projeteis = iterable_projeteis
 
     def update(self):
         if not self.state_vars['GAME_PAUSED']:
-            PhysicsEngine.processar_colisoes()
+
+            # Passa os iteráveis para o PhysicsEngine
+            PhysicsEngine.processar_colisoes(
+                self.iterable_projeteis,
+                self.iterable_inimigos,
+                self.iterable_caiporas
+            )
+            
+            # Atualiza os grupos de sprites originais
             caiporas_grupo.update()
             inimigos_grupo.update()
             projeteis_grupo.update()

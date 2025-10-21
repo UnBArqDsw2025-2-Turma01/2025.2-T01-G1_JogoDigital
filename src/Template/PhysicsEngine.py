@@ -1,47 +1,79 @@
-# Template/PhysicsEngine.py
-
 import pygame
-from Model.sprite_groups import projeteis_grupo, inimigos_grupo, caiporas_grupo
+from Model.interfaces import IIterableCollection
+from Model.Defense.caipora import Caipora
+from Model.Enemies.enemy import Enemy
+from Model.Items.arrow import Arrow
 
 class PhysicsEngine:
     @classmethod
-    def processar_colisoes(cls):
-        """Processa as colisões do jogo: projéteis vs inimigos e inimigos vs defesas."""
-        
-        # 1. Colisão de projéteis com inimigos
-        # True (remove projetil), False (NÃO remove inimigo automaticamente)
-        colisoes_projeteis = pygame.sprite.groupcollide(projeteis_grupo, inimigos_grupo, True, False)
+    def processar_colisoes(
+        cls,
+        projeteis_col: IIterableCollection[Arrow], 
+        inimigos_col: IIterableCollection[Enemy], 
+        caiporas_col: IIterableCollection[Caipora]
+    ):
+        # Colisão de projéteis com inimigos
 
-        for projetil, inimigos_atingidos in colisoes_projeteis.items():
-            for inimigo in inimigos_atingidos:
-                inimigo.health -= 25  # Aplica dano ao inimigo
-                
-                # Remove o inimigo se a vida chegou a zero ou menos
-                if inimigo.health <= 0:
-                    inimigo.kill()
+        # Pega o iterador de projéteis e cria um snapshot da lista de projéteis
+        iter_projeteis = projeteis_col.createIterator()
         
-        # 2. Colisão de inimigos com defesas
-        for inimigo in inimigos_grupo:
-            # Verifica se há alguma defesa na mesma linha e próxima do inimigo
-            defesas_na_linha = [d for d in caiporas_grupo if d.grid_y == inimigo.grid_y]
+        # Percorre o snapshot de projéteis
+        while iter_projeteis.hasMore():
+            projetil = iter_projeteis.getNext()
             
+            # Para cada projétil é criado um novo iterador de inimigos
+            iter_inimigos = inimigos_col.createIterator()
+            
+            #Percorre o snapshot de inimigos
+            while iter_inimigos.hasMore():
+                inimigo = iter_inimigos.getNext()
+                
+                # Checa colisão entre o projétil e o inimigo
+                if pygame.sprite.collide_rect(projetil, inimigo):
+                    
+                    # Usa o dano do projétil para reduzir a vida do inimigo
+                    inimigo.health -= projetil.damage 
+                    
+                    if inimigo.health <= 0:
+                        inimigo.kill() # Remove do grupo original
+                    projetil.kill() # Remove o projétil do grupo original
+                    break
+        
+        # Colisão de inimigos com defesas
+        
+        # Cria uma nova iteração de inimigos
+        iter_inimigos_ataque = inimigos_col.createIterator()
+        
+        # Percorre o snapshot de inimigos
+        while iter_inimigos_ataque.hasMore():
+            inimigo = iter_inimigos_ataque.getNext()
+            
+            # Para cada inimigo, cria um novo iterador de Caiporas
+            iter_caiporas = caiporas_col.createIterator()
+            defesas_na_linha = [] # Lista temporária
+            
+            # Percorre o snapshot de Caiporas
+            while iter_caiporas.hasMore():
+                defesa = iter_caiporas.getNext()
+                if defesa.grid_y == inimigo.grid_y:
+                    defesas_na_linha.append(defesa)
+
+            # Lógica de ataque
+            atacou_alguem = False
             for defesa in defesas_na_linha:
-                # Verifica se há colisão entre o inimigo e a defesa
                 if pygame.sprite.collide_rect(inimigo, defesa):
                     inimigo.is_attacking = True
+                    atacou_alguem = True
                     
-                    # Tenta usar a habilidade especial do inimigo (se tiver)
                     if hasattr(inimigo, 'attack'):
                         inimigo.attack(defesa)
                     else:
-                        # Ataque padrão
-                        defesa.health -= inimigo.damage * 0.1  # Aplica dano por frame
+                        defesa.health -= inimigo.damage * 0.1
                     
-                    # Remove a defesa se sua vida chegou a zero (independente do tipo de ataque)
                     if defesa.health <= 0:
                         defesa.kill()
                     
-                    break
-            else:
-                # Se não há colisão, o inimigo não está atacando
+                    break # Inimigo ataca apenas uma defesa por vez
+            
+            if not atacou_alguem:
                 inimigo.is_attacking = False

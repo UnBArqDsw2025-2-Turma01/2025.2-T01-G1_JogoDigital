@@ -5,12 +5,18 @@ from View.GameScreen.GameScreenRenderer import GameScreenRenderer
 from Core.ScreenManager import ScreenManager
 from View.Modal.PauseModal import PauseModal
 from Template.UIConfigs import *
+from Model.interfaces import IIterableCollection
+from Model.Defense.caipora import Caipora
+from Model.Enemies.enemy import Enemy
+from Model.Items.arrow import Arrow
 
 class GameScreen(BaseScreen):
-    def __init__(self):
+    def __init__(self, 
+                 # Os iteráveis são passados para a tela
+                 iterable_caiporas: IIterableCollection[Caipora], 
+                 iterable_inimigos: IIterableCollection[Enemy], 
+                 iterable_projeteis: IIterableCollection[Arrow]):
         super().__init__()
-
-        Level.inicializar_mapa()
 
         # Estado da tela
         self.state_vars = {
@@ -26,8 +32,13 @@ class GameScreen(BaseScreen):
         # Fonte
         self.font = pygame.font.SysFont(None, 24)
 
-        # Cria o renderer desta tela
-        self.renderer = GameScreenRenderer(self)
+        # Passa os iteráveis para o renderer
+        self.renderer = GameScreenRenderer(
+            self, 
+            iterable_caiporas, 
+            iterable_inimigos, 
+            iterable_projeteis
+        )
 
     def handle_event(self, event):
         """Processa eventos específicos da GameScreen."""
@@ -85,6 +96,7 @@ class GameScreen(BaseScreen):
                 break
 
     def update(self):
+        # A lógica de pause é tratada dentro do renderer
         self.renderer.update()
 
     def draw(self, surface):
