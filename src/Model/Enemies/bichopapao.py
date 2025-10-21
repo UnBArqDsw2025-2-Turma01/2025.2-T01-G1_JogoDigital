@@ -14,8 +14,9 @@ class BichoPapao(Enemy):
         # Inicializa a entidade sem imagem, pois vamos usar uma animação
         super().__init__(self.pos_x, self.pos_y, 70, 100, image_path=None)
         
-        # Carrega a animação e configura o estado inicial
+        # Carrega as animações e configura o estado inicial
         self.walk_animation = AssetProvider.get('bp_walk')
+        self.attack_animation = AssetProvider.get('bp_attack')
         self.current_frame = 0
         self.image = self.walk_animation[self.current_frame]
         self.rect = self.image.get_rect(topleft=(self.pos_x, self.pos_y))

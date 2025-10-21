@@ -57,6 +57,15 @@ class AssetProvider:
                 pygame.transform.scale(pygame.transform.flip(img, True, False), (TAMANHO_BP, TAMANHO_BP))
                 for img in bp_walk
             ]
+            
+            bp_attack = [
+                pygame.image.load(os.path.join(base_dir, 'characters', 'enemies', 'bicho-papao', f'bp_attack{i}.png')).convert_alpha()
+                for i in range(1, 3)
+            ]
+            cls.ASSETS['bp_attack'] = [
+                pygame.transform.scale(pygame.transform.flip(img, True, False), (TAMANHO_BP, TAMANHO_BP))
+                for img in bp_attack
+            ]
 
             # GUARANÁ (moeda) - carregar com o mesmo padrão dos outros assets
             cls.ASSETS['guarana_coin'] = pygame.transform.scale(

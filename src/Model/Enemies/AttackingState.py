@@ -12,7 +12,7 @@ class AttackingState:
         self.last_attack_time = 0
         self.attack_frame_index = 0  # Índice para alternar entre sprites de ataque
         self.attack_animation_timer = 0
-        self.attack_frame_duration = 15  # Frames para cada sprite de ataque
+        self.attack_frame_duration = 10  # Frames para cada sprite de ataque
     
     def enter(self, enemy) -> None:
         """Configurações ao entrar no estado de ataque."""
@@ -46,13 +46,13 @@ class AttackingState:
     def update(self, enemy) -> None:
         """Lógica de ataque - PhysicsEngine já chamou enemy.attack()."""
         
-        # Atualiza animação de ataque alternando entre 2 sprites
-        if hasattr(enemy, 'attack_animation') and enemy.attack_animation and len(enemy.attack_animation) >= 2:
+        # Atualiza animação de ataque alternando entre os sprites disponíveis
+        if hasattr(enemy, 'attack_animation') and enemy.attack_animation and len(enemy.attack_animation) > 0:
             self.attack_animation_timer += 1
             
             if self.attack_animation_timer >= self.attack_frame_duration:
-                # Alterna entre sprite 0 e 1
-                self.attack_frame_index = 1 - self.attack_frame_index
+                # Alterna entre os sprites de ataque
+                self.attack_frame_index = (self.attack_frame_index + 1) % len(enemy.attack_animation)
                 enemy.image = enemy.attack_animation[self.attack_frame_index]
                 self.attack_animation_timer = 0
         
