@@ -219,6 +219,11 @@ class InputHandler:
                     ViewRenderer.transition_to("menu")
                     return True
                 
+                elif tela_atual == "difficulty":
+                    print("[InputHandler] ESC - Voltando à seleção de nível")
+                    ViewRenderer.transition_to("level_select")
+                    return True
+                
             return False
         
         cls.add_global_handler("esc", handler_esc)

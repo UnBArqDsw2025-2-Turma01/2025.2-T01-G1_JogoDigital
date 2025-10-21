@@ -71,13 +71,13 @@ class LevelSelectScreen(BaseScreen):
                         break
     
     def _iniciar_nivel(self, level):
-        print(f"Iniciando {level.name}...")
+        print(f"Selecionando nível {level.name} para escolha de dificuldade...")
         from View.ViewRenderer import ViewRenderer
         
-        ViewRenderer.transition_to("jogo")
-        game_screen = ViewRenderer.get_current_screen()
-        if game_screen and hasattr(game_screen, 'set_current_level'):
-            game_screen.set_current_level(level)
+        ViewRenderer.transition_to("difficulty")
+        difficulty_screen = ViewRenderer.get_current_screen()
+        if difficulty_screen and hasattr(difficulty_screen, 'set_selected_level'):
+            difficulty_screen.set_selected_level(level)
     
     def update(self):
         pass
