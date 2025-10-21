@@ -8,6 +8,7 @@ from View.InputHandler import InputHandler
 from View.MenuScreen.MenuScreen import MenuScreen
 from View.GameScreen.GameScreen import GameScreen
 from View.LevelSelectScreen.LevelSelectScreen import LevelSelectScreen
+from View.DifficultScreen.DifficultScreen import DifficultScreen
 from Template.UIConfigs import FPS
 
 class GameMain:
@@ -28,6 +29,7 @@ class GameMain:
 
         ViewRenderer.add_screen("menu", MenuScreen())
         ViewRenderer.add_screen("level_select", LevelSelectScreen())
+        ViewRenderer.add_screen("difficulty", DifficultScreen())
         ViewRenderer.add_screen("jogo", GameScreen())
 
         ViewRenderer.init_screens("menu")
