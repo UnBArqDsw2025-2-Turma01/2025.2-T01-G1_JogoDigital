@@ -14,7 +14,3 @@ class IEnemyState(Protocol):
     def update(self, enemy) -> None:
         """Método executado a cada frame (Update loop)."""
         ...
-    
-    def handle_collision(self, enemy, other) -> None:
-        """Método para lidar com colisões específicas do estado."""
-        ...

@@ -32,7 +32,3 @@ class WalkingState:
             from Model.Enemies.AttackingState import AttackingState
             enemy.set_state(AttackingState())
             print(f"[{enemy.__class__.__name__}] PhysicsEngine detectou colisão, mudando para AttackingState")
-    
-    def handle_collision(self, enemy, other) -> None:
-        """Colisões são tratadas pelo PhysicsEngine."""
-        pass

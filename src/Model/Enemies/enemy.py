@@ -45,11 +45,6 @@ class Enemy(Entity):
         if self._current_state:
             self._current_state.update(self)
     
-    def handle_collision(self, other):
-        """Delega tratamento de colisão para o estado atual."""
-        if self._current_state:
-            self._current_state.handle_collision(self, other)
-    
     def get_scared(self, duration: int = 3000):
         """
         Método removido - inimigos não ficam assustados.
