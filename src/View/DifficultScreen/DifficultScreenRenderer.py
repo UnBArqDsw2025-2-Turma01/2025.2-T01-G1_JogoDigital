@@ -20,11 +20,8 @@ class DifficultScreenRenderer:
         surface.fill(self.bg_color)
         
         self._draw_title(surface)
-        
         self._draw_level_info(surface)
-        
         self._draw_difficulty_cards(surface)
-        
         self._draw_navigation_buttons(surface)
     
     def _draw_title(self, surface):

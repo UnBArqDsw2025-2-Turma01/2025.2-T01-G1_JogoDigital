@@ -11,7 +11,6 @@ from View.Modal.PauseModal import PauseModal
 from Asset.AssetProvider import AssetProvider
 import random
 
-
 class GameScreenRenderer:
     """Renderer específico da GameScreen, cuidando de mapa, entidades e UI."""
 
