@@ -2,17 +2,12 @@ import pygame
 from Template.Modal import Modal
 from Asset.AssetProvider import AssetProvider
 from Core.ScreenManager import ScreenManager
+from View.ViewRenderer import ViewRenderer
 
 class PauseModal(Modal):
     def __init__(self):
         super().__init__(blocks_update=True)
         self.scale_factor = 0.8
-
-        # integração engine
-        self._input_registered = False
-        self._view_registered = False
-        self._input_reg_info = None
-        self._view_reg_info = None
 
         # assets / UI
         self.menu_img = AssetProvider.get('menu_pausa')
@@ -98,9 +93,6 @@ class PauseModal(Modal):
         self.dragging_music = False
         self.dragging_sfx = False
 
-        # tenta integrar com InputHandler / ViewRenderer
-        self._try_integrate_with_engine()
-
     def _volume_step_index(self, vol):
         steps = [0.0, 0.25, 0.5, 0.75, 1.0]
         return min(range(len(steps)), key=lambda i: abs(steps[i] - vol))
@@ -171,18 +163,8 @@ class PauseModal(Modal):
                         return True
 
             if getattr(self, 'sair_rect', pygame.Rect(0,0,0,0)).collidepoint(x, y):
-                try:
-                    ScreenManager.pop_modal()
-                except Exception:
-                    pass
-                if ScreenManager:
-                    for method in ('set_tela','set_screen','change_screen','change','goto','go_to'):
-                        if hasattr(ScreenManager, method):
-                            try:
-                                getattr(ScreenManager, method)('menu')
-                            except Exception:
-                                pass
-                            break
+                ScreenManager.pop_modal()
+                ViewRenderer.transition_to('menu')
                 return True
 
             if self.icon_music_rect.collidepoint(x, y):
@@ -342,116 +324,3 @@ class PauseModal(Modal):
             fill_w = int(self.sfx_volume * self.slider_sfx_rect.w)
             pygame.draw.rect(surface, (140,180,100), (self.slider_sfx_rect.x, self.slider_sfx_rect.y, fill_w, self.slider_sfx_rect.h), border_radius=4)
             pygame.draw.rect(surface, (200,200,200), self.slider_sfx_rect, 2, border_radius=4)
-
-
-    def _try_integrate_with_engine(self):
-        try:
-            from Core import InputHandler as IH_mod
-        except Exception:
-            IH_mod = None
-        if IH_mod is None:
-            try:
-                from Core.InputHandler import InputHandler as IH_mod
-            except Exception:
-                IH_mod = None
-
-        if IH_mod:
-            candidates = ('register_listener', 'add_listener', 'subscribe', 'add_handler', 'push_modal', 'attach')
-            for name in candidates:
-                fn = getattr(IH_mod, name, None)
-                if callable(fn):
-                    try:
-                        fn(self.handle_event)
-                        self._input_registered = True
-                        self._input_reg_info = (IH_mod, name, 'call(handle_event)')
-                        break
-                    except TypeError:
-                        try:
-                            fn(self)
-                            self._input_registered = True
-                            self._input_reg_info = (IH_mod, name, 'call(self)')
-                            break
-                        except Exception:
-                            pass
-                    except Exception:
-                        pass
-
-        try:
-            from Core import ViewRenderer as VR_mod
-        except Exception:
-            VR_mod = None
-        if VR_mod is None:
-            try:
-                from Core.ViewRenderer import ViewRenderer as VR_mod
-            except Exception:
-                VR_mod = None
-
-        if VR_mod:
-            def _render_wrapper(surface):
-                try:
-                    self.draw(surface)
-                except Exception:
-                    pass
-
-            candidates = ('register_view', 'register_layer', 'add_view', 'add_layer', 'register_modal', 'push_layer')
-            for name in candidates:
-                fn = getattr(VR_mod, name, None)
-                if callable(fn):
-                    try:
-                        fn(_render_wrapper)
-                        self._view_registered = True
-                        self._view_reg_info = (VR_mod, name, 'call(wrapper)')
-                        break
-                    except TypeError:
-                        try:
-                            fn(self)
-                            self._view_registered = True
-                            self._view_reg_info = (VR_mod, name, 'call(self)')
-                            break
-                        except Exception:
-                            pass
-                    except Exception:
-                        pass
-
-    def unregister_from_engine(self):
-        if self._input_registered and self._input_reg_info:
-            try:
-                IH_mod, name, mode = self._input_reg_info
-                remove_candidates = ('unregister_listener', 'remove_listener', 'unsubscribe', 'remove_handler', 'pop_modal', 'detach')
-                for rn in remove_candidates:
-                    rem = getattr(IH_mod, rn, None)
-                    if callable(rem):
-                        try:
-                            if mode == 'call(handle_event)':
-                                rem(self.handle_event)
-                            else:
-                                rem(self)
-                            break
-                        except Exception:
-                            pass
-            except Exception:
-                pass
-            finally:
-                self._input_registered = False
-                self._input_reg_info = None
-
-        if self._view_registered and self._view_reg_info:
-            try:
-                VR_mod, name, mode = self._view_reg_info
-                remove_candidates = ('unregister_view', 'remove_view', 'remove_layer', 'pop_layer', 'unregister_modal')
-                for rn in remove_candidates:
-                    rem = getattr(VR_mod, rn, None)
-                    if callable(rem):
-                        try:
-                            if mode == 'call(wrapper)':
-                                rem(self.draw)
-                            else:
-                                rem(self)
-                            break
-                        except Exception:
-                            pass
-            except Exception:
-                pass
-            finally:
-                self._view_registered = False
-                self._view_reg_info = None
