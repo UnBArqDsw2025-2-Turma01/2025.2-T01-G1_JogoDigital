@@ -3,6 +3,7 @@ from Template.BaseScreen import BaseScreen
 from View.LevelSelectScreen.LevelSelectScreenRenderer import LevelSelectScreenRenderer
 from Model.Level import Level, LevelStatus
 from View.InputHandler import InputHandler, InputType
+from View.ViewRenderer import ViewRenderer  
 
 class LevelSelectScreen(BaseScreen):
     
@@ -15,9 +16,9 @@ class LevelSelectScreen(BaseScreen):
         self.selected_level = None
         self.level_rects = {}
 
-        self.font_title = pygame.font.Font(None, 80)
-        self.font_normal = pygame.font.Font(None, 40)
-        self.font_small = pygame.font.Font(None, 30)
+        self.font_title = ViewRenderer.get_fonte("grande")
+        self.font_normal = ViewRenderer.get_fonte("normal")
+        self.font_small = ViewRenderer.get_fonte("pequena")
 
         self.back_rect = pygame.Rect(50, 700, 150, 50)
         self.play_rect = pygame.Rect(1000, 700, 150, 50)
@@ -52,7 +53,6 @@ class LevelSelectScreen(BaseScreen):
 
     def _handle_keyboard(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            from View.ViewRenderer import ViewRenderer
             ViewRenderer.transition_to("menu")
 
     def _handle_mouse(self, event):
@@ -62,7 +62,6 @@ class LevelSelectScreen(BaseScreen):
         x, y = event.pos
 
         if self.back_rect.collidepoint(x, y):
-            from View.ViewRenderer import ViewRenderer
             ViewRenderer.transition_to("menu")
 
         elif self.play_rect.collidepoint(x, y) and self.selected_level:
@@ -79,7 +78,6 @@ class LevelSelectScreen(BaseScreen):
 
     def _iniciar_nivel(self, level):
         print(f"Selecionando nível {level.name} para escolha de dificuldade...")
-        from View.ViewRenderer import ViewRenderer
         ViewRenderer.transition_to("difficulty")
 
         difficulty_screen = ViewRenderer.get_current_screen()
