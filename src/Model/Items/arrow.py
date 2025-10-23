@@ -1,5 +1,5 @@
 from ..entity import Entity
-from ..sprite_groups import projeteis_grupo
+from ..sprite_groups import sprite_manager
 from Asset.AssetProvider import AssetProvider
 from Template.UIConfigs import LARGURA_TELA
 
@@ -8,7 +8,7 @@ class Arrow(Entity):
         super().__init__(x, y, 40, 10, None)
         
         self.remove(self.groups())
-        projeteis_grupo.add(self)
+        sprite_manager.projeteis.add(self)
         
         self.image = AssetProvider.get('caipora_projectile')
         self.rect = self.image.get_rect(center=(x, y))

@@ -3,6 +3,7 @@ Estado ocioso para defesas.
 Responsável por manter a defesa esperando por inimigos.
 """
 import pygame
+from ..sprite_groups import sprite_manager, get_posicao_tela
 
 class IdleState:
     """Estado onde a defesa está ociosa, sem alvos."""
@@ -21,7 +22,8 @@ class IdleState:
     
     def update(self, defense) -> None:
         """Verifica se há inimigos na linha para mudar para AttackingState."""
-        from Model.sprite_groups import inimigos_grupo
+        from Model.sprite_groups import sprite_manager
+        inimigos_grupo = sprite_manager.inimigos
         
         # Verifica se há inimigo na mesma linha
         alvo_na_linha = any(

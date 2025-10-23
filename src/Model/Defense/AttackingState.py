@@ -22,7 +22,8 @@ class AttackingState:
     
     def update(self, defense) -> None:
         """Executa animação de ataque e dispara projétil no frame correto."""
-        from Model.sprite_groups import inimigos_grupo
+        from Model.sprite_groups import sprite_manager
+        inimigos_grupo = sprite_manager.inimigos
         
         # Verifica se ainda há inimigos na linha
         alvo_na_linha = any(

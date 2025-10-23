@@ -1,6 +1,6 @@
 import pygame
 from ..entity import Entity
-from ..sprite_groups import guaranas_grupo
+from ..sprite_groups import sprite_manager  # importa o composite
 from Asset.AssetProvider import AssetProvider
 from Template.UIConfigs import ALTURA_TELA
 
@@ -9,8 +9,8 @@ class Guarana(Entity):
     def __init__(self, x, y, value=1, speed=2):
         super().__init__(x, y, 40, 40, None)
         
-        self.remove(self.groups())
-        guaranas_grupo.add(self)
+        # Adiciona automaticamente no grupo 'guaranas' do composite
+        sprite_manager.guaranas.add(self)
         
         self.value = value
         self.speed = speed

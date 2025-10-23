@@ -1,7 +1,9 @@
+# Core/GameMain.py
+
 import pygame
 from Core.ScreenManager import ScreenManager
 from Model.Level import Level
-from Model.sprite_groups import caiporas_grupo, inimigos_grupo, projeteis_grupo
+from Model.sprite_groups import sprite_manager
 from Template.PhysicsEngine import PhysicsEngine
 from View.ViewRenderer import ViewRenderer
 from View.InputHandler import InputHandler
@@ -14,12 +16,9 @@ from Template.UIConfigs import FPS
 class GameMain:
     def __init__(self):
         ScreenManager.inicializar_pygame()
-
         ViewRenderer.inicializar()
-
         InputHandler.inicializar()
         InputHandler.setup_default_shortcuts()
-
         Level.inicializar_mapa()
 
         self.state_vars = {
@@ -35,26 +34,20 @@ class GameMain:
         ViewRenderer.init_screens("menu")
 
     def update(self):
-        """Lógica de atualização do jogo."""
-        
+        """Atualização geral do jogo."""
         PhysicsEngine.processar_colisoes()
-        
-        caiporas_grupo.update()
-        inimigos_grupo.update()
-        projeteis_grupo.update()
-        
+        sprite_manager.update()
+
     def loop(self):
         """Loop principal do jogo."""
         rodando = True
         relogio = ScreenManager.get_relogio()
-        
+
         while rodando:
             rodando = InputHandler.process_events()
-
             ViewRenderer.update()
             ViewRenderer.render(ScreenManager.get_tela())
-            
             pygame.display.flip()
             relogio.tick(FPS)
-            
+
         pygame.quit()

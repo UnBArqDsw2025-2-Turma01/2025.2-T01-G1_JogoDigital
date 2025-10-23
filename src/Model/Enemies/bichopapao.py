@@ -2,7 +2,7 @@
 from ..Enemies.enemy import Enemy
 import pygame
 from Asset.AssetProvider import AssetProvider
-from Model.sprite_groups import inimigos_grupo, get_posicao_tela
+from Model.sprite_groups import sprite_manager, get_posicao_tela
 
 class BichoPapao(Enemy):
     def __init__(self, grid_x, grid_y):
@@ -23,7 +23,7 @@ class BichoPapao(Enemy):
         self.animation_speed = 0.1  # Velocidade da animação
 
         # Adiciona a instância ao grupo de inimigos
-        inimigos_grupo.add(self)
+        sprite_manager.inimigos.add(self)
 
         # Atributos de combate e habilidade
         self.health = 400

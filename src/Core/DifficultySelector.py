@@ -94,3 +94,5 @@ class DifficultySelector:
     @classmethod
     def get_current_level(cls) -> str:
         return cls._nivel
+
+

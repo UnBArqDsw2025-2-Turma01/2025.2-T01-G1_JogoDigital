@@ -76,7 +76,8 @@ class GameScreen(BaseScreen):
     
     def _handle_guarana_click(self, x: int, y: int):
         """Processa clique em guaranás para coletar."""
-        from Model.sprite_groups import guaranas_grupo
+        from Model.sprite_groups import sprite_manager
+        guaranas_grupo = sprite_manager.guaranas
         
         for guarana in list(guaranas_grupo):
             if guarana.rect.collidepoint(x, y):

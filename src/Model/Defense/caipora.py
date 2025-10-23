@@ -1,6 +1,6 @@
 from .defense import Defense
 from ..Items.arrow import Arrow
-from ..sprite_groups import caiporas_grupo, inimigos_grupo, get_posicao_tela
+from ..sprite_groups import sprite_manager, get_posicao_tela
 from Asset.AssetProvider import AssetProvider
 import pygame
 
@@ -13,7 +13,7 @@ class Caipora(Defense):
         super().__init__(self.pos_x, self.pos_y, 80, 80, None, 10)
         
         self.remove(self.groups())
-        caiporas_grupo.add(self)
+        sprite_manager.caiporas.add(self)
         
         self.frames = AssetProvider.get('caipora_attack')
         self.frame_index = 0
