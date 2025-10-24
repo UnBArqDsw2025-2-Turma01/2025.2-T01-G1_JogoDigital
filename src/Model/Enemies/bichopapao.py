@@ -1,6 +1,8 @@
 # models/bicho_papao.py
 from ..Enemies.enemy import Enemy
+from .EnemyPrototype import IEnemyPrototype
 import pygame
+import copy
 from Asset.AssetProvider import AssetProvider
 from Model.sprite_groups import sprite_manager, get_posicao_tela
 
@@ -67,3 +69,18 @@ class BichoPapao(Enemy):
         if hasattr(defense, 'get_scared'):
             defense.get_scared(self.scare_duration)
             print(f"[BichoPapao] Assustou {defense.__class__.__name__}!")
+
+class BichoPapaoPrototype(IEnemyPrototype):
+    
+    def clone(self, grid_x: int, grid_y: int, **kwargs):
+        health = kwargs.get('health', 400)
+        speed = kwargs.get('speed', 6)
+        damage = kwargs.get('damage', 30)
+        
+        new_enemy = BichoPapao(grid_x, grid_y)
+        
+        new_enemy.health = health
+        new_enemy.speed = speed
+        new_enemy.damage = damage
+        
+        return new_enemy
