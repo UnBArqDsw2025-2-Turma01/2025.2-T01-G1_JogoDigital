@@ -47,7 +47,8 @@ class ScaredState:
         # Verifica se duração do medo acabou
         if now - self.start_time >= self.duration:
             # Verifica se há inimigos para atacar ou volta para idle
-            from Model.sprite_groups import inimigos_grupo
+            from Model.sprite_groups import sprite_manager
+            inimigos_grupo = sprite_manager.inimigos
             
             alvo_na_linha = any(
                 e for e in inimigos_grupo 

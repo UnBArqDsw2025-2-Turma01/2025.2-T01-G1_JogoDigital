@@ -6,7 +6,7 @@ from .sprite_groups import sprite_manager, get_posicao_tela
 
 __all__ = [
     'Caipora', 'Arrow', 'Guarana', 'BichoPapao',
-    'caiporas_grupo', 'inimigos_grupo', 'projeteis_grupo', 'guaranas_grupo',
+    'sprite_manager',
     'get_posicao_tela'
 ]
 
