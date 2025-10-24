@@ -5,7 +5,7 @@ from typing import Dict, Optional
 class IEnemyPrototype(ABC):
     
     @abstractmethod
-    def clone(self, grid_x: int, grid_y: int, **kwargs):
+    def clone(self):
         pass
 
 
@@ -20,7 +20,14 @@ class EnemyPrototypeRegistry:
     @classmethod
     def create(cls, enemy_type: str, grid_x: int, grid_y: int, **kwargs):
         if enemy_type in cls._prototypes:
-            return cls._prototypes[enemy_type].clone(grid_x, grid_y, **kwargs)
+            cloned_prototype = cls._prototypes[enemy_type].clone()
+            
+            if kwargs:
+                cloned_prototype.configure(**kwargs)
+            
+            if hasattr(cloned_prototype, 'create_enemy'):
+                return cloned_prototype.create_enemy(grid_x, grid_y)
+            
         return None
     
     @classmethod

@@ -72,15 +72,41 @@ class BichoPapao(Enemy):
 
 class BichoPapaoPrototype(IEnemyPrototype):
     
-    def clone(self, grid_x: int, grid_y: int, **kwargs):
-        health = kwargs.get('health', 400)
-        speed = kwargs.get('speed', 6)
-        damage = kwargs.get('damage', 30)
+    def __init__(self, prototype=None):
+        if prototype is not None:
+            self.health = prototype.health
+            self.speed = prototype.speed
+            self.damage = prototype.damage
+            self.scare_range = prototype.scare_range
+            self.scare_duration = prototype.scare_duration
+            self.scare_cooldown = prototype.scare_cooldown
+        else:
+            self.health = 400
+            self.speed = 6
+            self.damage = 30
+            self.scare_range = 100
+            self.scare_duration = 3000
+            self.scare_cooldown = 8000
+    
+    def clone(self):
+        return BichoPapaoPrototype(self)
+    
+    def create_enemy(self, grid_x: int, grid_y: int):
+        enemy = BichoPapao(grid_x, grid_y)
         
-        new_enemy = BichoPapao(grid_x, grid_y)
+        enemy.health = self.health
+        enemy.speed = self.speed
+        enemy.damage = self.damage
+        enemy.scare_range = self.scare_range
+        enemy.scare_duration = self.scare_duration
+        enemy.scare_cooldown = self.scare_cooldown
         
-        new_enemy.health = health
-        new_enemy.speed = speed
-        new_enemy.damage = damage
-        
-        return new_enemy
+        return enemy
+    
+    def configure(self, **kwargs):
+        self.health = kwargs.get('health', self.health)
+        self.speed = kwargs.get('speed', self.speed)
+        self.damage = kwargs.get('damage', self.damage)
+        self.scare_range = kwargs.get('scare_range', self.scare_range)
+        self.scare_duration = kwargs.get('scare_duration', self.scare_duration)
+        self.scare_cooldown = kwargs.get('scare_cooldown', self.scare_cooldown)
