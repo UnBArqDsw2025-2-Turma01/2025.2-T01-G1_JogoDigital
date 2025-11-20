@@ -42,21 +42,15 @@ class GameMain:
         sprite_manager.update()
 
     def loop(self):
+        """Loop principal do jogo."""
         rodando = True
         relogio = ScreenManager.get_relogio()
 
         while rodando:
             rodando = InputHandler.process_events()
-            
             ViewRenderer.update()
-
-            # Renderiza para a TELA VIRTUAL
             ViewRenderer.render(ScreenManager.get_tela())
-
-            # Renderiza para o monitor (fullscreen com letterbox)
-            ScreenManager.draw()
-
+            pygame.display.flip()
             relogio.tick(FPS)
 
         pygame.quit()
-
