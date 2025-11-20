@@ -43,10 +43,11 @@ class GameScreenRenderer:
                 self.spawn_guarana()
 
     def spawn_guarana(self):
-        """Cria um guaraná em posição aleatória no topo do mapa."""
-        grid_x_min = GRID_OFFSET_X
-        grid_x_max = GRID_OFFSET_X + NUM_COLUNAS * TAMANHO_QUADRADO
-        x = random.randint(grid_x_min + 20, grid_x_max - 20)
+        """Cria um guaraná em posição aleatória em um tile do mapa."""
+        coluna_aleatoria = random.randint(0, NUM_COLUNAS - 1)
+
+        x = GRID_OFFSET_X + (coluna_aleatoria * TAMANHO_QUADRADO) + (TAMANHO_QUADRADO // 2)
+
         y = GRID_OFFSET_Y - 30
         Guarana(x, y, value=1, speed=random.randint(2, 5))
 

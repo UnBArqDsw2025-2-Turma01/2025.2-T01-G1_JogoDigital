@@ -2,7 +2,8 @@ import pygame
 from ..entity import Entity
 from ..sprite_groups import sprite_manager  # importa o composite
 from Asset.AssetProvider import AssetProvider
-from Template.UIConfigs import ALTURA_TELA
+from Template.UIConfigs import ALTURA_TELA, GRID_OFFSET_Y, NUM_LINHAS, TAMANHO_QUADRADO
+import random
 
 class Guarana(Entity):
     """Sprite colecionável que cai; fica em Items para separar Model/View."""
@@ -14,6 +15,10 @@ class Guarana(Entity):
         
         self.value = value
         self.speed = speed
+
+        self.linha_destino = random.randint(0, NUM_LINHAS - 1)
+        self.y_destino = GRID_OFFSET_Y + (self.linha_destino * TAMANHO_QUADRADO) + (TAMANHO_QUADRADO // 2)
+        self.parado = False
 
         img = AssetProvider.get('guarana_coin')
         if img is None:
@@ -30,10 +35,12 @@ class Guarana(Entity):
         self.rect = self.image.get_rect(center=(x, y))
 
     def update(self):
-        self.rect.y += self.speed
-        # Remove o guaraná se ele passar da borda da tela
-        if self.rect.top > ALTURA_TELA:
-            self.kill()
+        if not self.parado:
+            self.rect.y += self.speed
+            # Para quando atingir a linha de destino
+            if self.rect.centery >= self.y_destino:
+                self.rect.centery = self.y_destino
+                self.parado = True
 
     def collect(self):
         """Coleta o guaraná (placeholder para efeitos sonoros/visuais)."""
