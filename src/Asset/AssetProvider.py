@@ -3,11 +3,26 @@ import os
 from Template.UIConfigs import *
 
 class AssetProvider:
+    """
+    Singleton para gerenciamento centralizado de assets do jogo.
+    """
     ASSETS = {}
+    _loaded = False
+    
+    def __init__(self):
+        """Impede instanciação - AssetProvider deve ser usado apenas como classe estática."""
+        raise TypeError(
+            "AssetProvider não deve ser instanciado. "
+            "Use AssetProvider.carregar_assets() e AssetProvider.get(key) diretamente."
+        )
     
     @classmethod
     def carregar_assets(cls):
         """Carrega e escala todos os assets do jogo."""
+        if cls._loaded:
+            print("[AssetProvider] Assets já carregados anteriormente, pulando recarregamento.")
+            return
+        
         base_dir = os.path.dirname(os.path.abspath(__file__))
         try:
             # FONTE
@@ -234,14 +249,25 @@ class AssetProvider:
                 ).convert_alpha(),
                 })
             
-
-
-            print("Assets carregados com sucesso.")
+            cls._loaded = True
+            print("[AssetProvider] Assets carregados com sucesso.")
 
         except pygame.error as e:
-            print(f"ERRO CRÍTICO ao carregar assets: {e}")
+            print(f"[AssetProvider] ERRO CRÍTICO ao carregar assets: {e}")
             pygame.quit()
             exit()
+    
+    @classmethod
+    def is_loaded(cls) -> bool:
+        """Verifica se os assets já foram carregados."""
+        return cls._loaded
+    
+    @classmethod
+    def reload(cls):
+        """Força recarregamento de todos os assets (use com cautela)."""
+        cls._loaded = False
+        cls.ASSETS.clear()
+        cls.carregar_assets()
             
     @classmethod
     def get(cls, key):
