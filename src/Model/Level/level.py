@@ -64,16 +64,24 @@ class Level:
         return False
     
     @classmethod
-    def inicializar_mapa(cls):
-        """Inicializa o mapa lógico e a população inicial."""
+    def inicializar_mapa(cls, spawn_enemies: bool = False):
+        """
+        Inicializa o mapa lógico e opcionalmente a população inicial.
+        
+        Args:
+            spawn_enemies: Se True, spawna inimigos automaticamente.
+                          Se False, deixa para o WaveManager controlar.
+        """
         cls.MAPA_LOGICO = [[0] * NUM_COLUNAS for _ in range(NUM_LINHAS)] 
         
         for linha in range(NUM_LINHAS):
             cls.MAPA_LOGICO[linha][0] = 1 
             Caipora(0, linha)
 
-        linha_bp = random.randint(0, NUM_LINHAS - 1)
-        EnemyFactory.create_enemy("bicho_papao", NUM_COLUNAS - 1, linha_bp)
+        # Spawna inimigos apenas se solicitado (compatibilidade com sistema antigo)
+        if spawn_enemies:
+            linha_bp = random.randint(0, NUM_LINHAS - 1)
+            EnemyFactory.create_enemy("bicho_papao", NUM_COLUNAS - 1, linha_bp)
         
     @classmethod
     def is_posicao_vazia(cls, linha, coluna):
