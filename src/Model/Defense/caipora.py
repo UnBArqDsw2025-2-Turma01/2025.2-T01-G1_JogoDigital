@@ -31,3 +31,13 @@ class Caipora(Defense):
     def atirar(self):
         """Dispara uma flecha."""
         Arrow(self.rect.centerx, self.rect.centery, self.grid_y)
+    
+    def kill(self):
+        """
+        Sobrescreve kill() para limpar a posição no MAPA_LOGICO.
+        """
+        from Model.Level import Level
+        Level.MAPA_LOGICO[self.grid_y][self.grid_x] = 0
+        print(f"[Caipora] Posição ({self.grid_x}, {self.grid_y}) liberada no mapa")
+        # Chama kill() original
+        super().kill()
