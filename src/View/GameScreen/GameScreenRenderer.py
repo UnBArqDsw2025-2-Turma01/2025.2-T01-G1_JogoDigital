@@ -76,6 +76,52 @@ class GameScreenRenderer:
         UIRenderer.desenhar_botao(surface, self.add_rect, cor_add, "ADICIONAR", self.font)
         UIRenderer.desenhar_botao(surface, self.pause_rect, cor_pause, "PAUSE", self.font)
 
+        # Desenha informações das ondas (reutiliza sistema de UI existente)
+        self._draw_wave_info(surface)
+
         if self.state_vars['GAME_PAUSED']:
             pausa_texto = self.font.render("JOGO PAUSADO", True, (255, 255, 255))
             surface.blit(pausa_texto, pausa_texto.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2)))
+    
+    def _draw_wave_info(self, surface):
+        """
+        Desenha informações do sistema de ondas.
+        Reutiliza sistema de UI e fonts existentes.
+        """
+        wave_info = self.screen.get_wave_info()
+        if not wave_info:
+            return
+        
+        info_x = 20
+        info_y = ALTURA_TELA_JANELA - 120
+        
+        if not wave_info['game_started']:
+            text1 = self.font.render("Pressione G para iniciar o jogo", True, (255, 255, 0))
+            text2 = self.font.render("Pressione SPACE para próxima onda", True, (200, 200, 200))
+            surface.blit(text1, (info_x, info_y))
+            surface.blit(text2, (info_x, info_y + 25))
+        
+        elif wave_info['game_completed']:
+            text1 = self.font.render("JOGO CONCLUÍDO!", True, (0, 255, 0))
+            text2 = self.font.render("Pressione M para voltar ao menu", True, (200, 200, 200))
+            surface.blit(text1, (info_x, info_y))
+            surface.blit(text2, (info_x, info_y + 25))
+        
+        else:
+            # Informações da onda atual
+            wave_text = f"Onda: {wave_info['current_wave']}/{wave_info['total_waves']}"
+            state_text = f"Estado: {wave_info['wave_state']}"
+            enemies_text = f"Inimigos restantes: {wave_info['enemies_remaining']}"
+            
+            text1 = self.font.render(wave_text, True, (255, 255, 255))
+            text2 = self.font.render(state_text, True, (200, 200, 200))
+            text3 = self.font.render(enemies_text, True, (200, 200, 200))
+            
+            surface.blit(text1, (info_x, info_y))
+            surface.blit(text2, (info_x, info_y + 25))
+            surface.blit(text3, (info_x, info_y + 50))
+            
+            # Instrução para próxima onda
+            if wave_info['wave_state'] == 'waiting':
+                next_text = self.font.render("Pressione SPACE para próxima onda", True, (255, 255, 0))
+                surface.blit(next_text, (info_x, info_y + 75))

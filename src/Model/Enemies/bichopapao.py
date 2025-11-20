@@ -29,7 +29,7 @@ class BichoPapao(Enemy):
 
         # Atributos de combate e habilidade
         self.health = 400
-        self.speed = 6
+        self.speed = 2 
         self.damage = 30
         
         self.scare_range = 100
@@ -82,7 +82,7 @@ class BichoPapaoPrototype(IEnemyPrototype):
             self.scare_cooldown = prototype.scare_cooldown
         else:
             self.health = 400
-            self.speed = 6
+            self.speed = 2
             self.damage = 30
             self.scare_range = 100
             self.scare_duration = 3000
