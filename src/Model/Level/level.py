@@ -3,7 +3,7 @@ from typing import List, Optional
 from enum import Enum
 from Template.UIConfigs import NUM_LINHAS, NUM_COLUNAS
 from Model.Defense.caipora import Caipora
-from Model.Enemies.bichopapao import BichoPapao
+from Model.Enemies.EnemyPrototype import EnemyFactory
 
 class LevelStatus(Enum):
     LOCKED = "locked"
@@ -73,7 +73,7 @@ class Level:
             Caipora(0, linha)
 
         linha_bp = random.randint(0, NUM_LINHAS - 1)
-        BichoPapao(NUM_COLUNAS - 1, linha_bp)
+        EnemyFactory.create_enemy("bicho_papao", NUM_COLUNAS - 1, linha_bp)
         
     @classmethod
     def is_posicao_vazia(cls, linha, coluna):

@@ -11,6 +11,7 @@ from View.MenuScreen.MenuScreen import MenuScreen
 from View.GameScreen.GameScreen import GameScreen
 from View.LevelSelectScreen.LevelSelectScreen import LevelSelectScreen
 from View.DifficultScreen.DifficultScreen import DifficultScreen
+from Model.Enemies.EnemyPrototype import initialize_enemy_prototypes
 from Template.UIConfigs import FPS
 
 class GameMain:
@@ -19,6 +20,8 @@ class GameMain:
         ViewRenderer.inicializar()
         InputHandler.inicializar()
         InputHandler.setup_default_shortcuts()
+        
+        initialize_enemy_prototypes()
         Level.inicializar_mapa()
 
         self.state_vars = {
